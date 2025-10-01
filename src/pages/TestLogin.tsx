@@ -1,16 +1,66 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import Navbar from "@/components/Navbar";
-import { User, Home } from "lucide-react";
+import { User, Home, Loader2, CheckCircle } from "lucide-react";
 
 const TestLogin = () => {
   const [loading, setLoading] = useState(false);
+  const [creatingUsers, setCreatingUsers] = useState(false);
+  const [usersCreated, setUsersCreated] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
+
+  useEffect(() => {
+    // Check if we need to create test users on first load
+    checkAndCreateTestUsers();
+  }, []);
+
+  const checkAndCreateTestUsers = async () => {
+    try {
+      setCreatingUsers(true);
+      const { data, error } = await supabase.functions.invoke("create-test-users");
+      
+      if (error) {
+        console.error("Error invoking function:", error);
+        toast({
+          title: "Setup issue",
+          description: "Couldn't auto-create test users. Please create them manually via Register.",
+          variant: "destructive",
+        });
+        return;
+      }
+      
+      if (data?.results) {
+        const allExistOrCreated = data.results.every(
+          (r: any) => r.status === "created" || r.status === "already_exists"
+        );
+        
+        if (allExistOrCreated) {
+          setUsersCreated(true);
+          const newUsers = data.results.filter((r: any) => r.status === "created");
+          if (newUsers.length > 0) {
+            toast({
+              title: "Test users ready",
+              description: `${newUsers.length} test user(s) created successfully`,
+            });
+          }
+        }
+      }
+    } catch (error: any) {
+      console.error("Error creating test users:", error);
+      toast({
+        title: "Note",
+        description: "Test users may need to be created manually. Use the Register page.",
+        variant: "default",
+      });
+    } finally {
+      setCreatingUsers(false);
+    }
+  };
 
   const testUsers = [
     {
@@ -67,6 +117,18 @@ const TestLogin = () => {
             <p className="text-muted-foreground">
               Quick login with pre-configured test accounts
             </p>
+            {creatingUsers && (
+              <div className="flex items-center justify-center space-x-2 text-sm text-muted-foreground">
+                <Loader2 className="h-4 w-4 animate-spin" />
+                <span>Setting up test users...</span>
+              </div>
+            )}
+            {usersCreated && !creatingUsers && (
+              <div className="flex items-center justify-center space-x-2 text-sm text-green-600">
+                <CheckCircle className="h-4 w-4" />
+                <span>Test users ready!</span>
+              </div>
+            )}
           </div>
 
           <div className="grid md:grid-cols-2 gap-6">
@@ -101,7 +163,7 @@ const TestLogin = () => {
                   <Button
                     className="w-full"
                     onClick={() => handleTestLogin(user.email, user.password)}
-                    disabled={loading}
+                    disabled={loading || creatingUsers}
                   >
                     {loading ? "Logging in..." : `Login as ${user.name}`}
                   </Button>
@@ -111,13 +173,22 @@ const TestLogin = () => {
           </div>
 
           <Card className="border-dashed">
-            <CardContent className="py-6 text-center space-y-2">
-              <p className="text-sm text-muted-foreground">
-                Or use the standard login page
-              </p>
-              <Button variant="outline" onClick={() => navigate("/login")}>
-                Go to Login Page
-              </Button>
+            <CardContent className="py-6 space-y-4">
+              <div className="text-center space-y-2">
+                <p className="text-sm text-muted-foreground">
+                  Or create test users manually via registration
+                </p>
+                <Button variant="outline" onClick={() => navigate("/register")}>
+                  Go to Register Page
+                </Button>
+              </div>
+              
+              <div className="pt-4 border-t space-y-2">
+                <p className="text-xs text-muted-foreground text-center">
+                  💡 <strong>Tip:</strong> If login fails, refresh this page to auto-create test users.
+                  Or manually register with the credentials shown above.
+                </p>
+              </div>
             </CardContent>
           </Card>
         </div>
