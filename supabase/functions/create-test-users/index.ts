@@ -27,6 +27,7 @@ serve(async (req) => {
       {
         email: "owner@ppuk.test",
         password: "password123",
+        email_confirm: true,
         user_metadata: {
           full_name: "Test Owner",
           role: "owner",
@@ -35,6 +36,7 @@ serve(async (req) => {
       {
         email: "buyer@ppuk.test",
         password: "password123",
+        email_confirm: true,
         user_metadata: {
           full_name: "Test Buyer",
           role: "buyer",

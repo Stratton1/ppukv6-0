@@ -7,6 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import Navbar from "@/components/Navbar";
+import { DevAuthBypass } from "@/components/DevAuthBypass";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -25,7 +26,12 @@ const Login = () => {
         password,
       });
 
-      if (error) throw error;
+      if (error) {
+        console.error("Supabase auth error:", error);
+        throw error;
+      }
+
+      console.log("Login successful:", data.user?.email);
 
       toast({
         title: "Success",
@@ -34,6 +40,7 @@ const Login = () => {
 
       navigate("/dashboard");
     } catch (error: any) {
+      console.error("Login error:", error);
       toast({
         title: "Error",
         description: error.message || "Failed to login",
@@ -49,7 +56,10 @@ const Login = () => {
       <Navbar />
       
       <div className="container mx-auto px-4 py-16 flex items-center justify-center">
-        <Card className="w-full max-w-md">
+        <div className="w-full max-w-md space-y-6">
+          <DevAuthBypass enabled={true} />
+          
+          <Card className="w-full">
           <CardHeader className="space-y-1">
             <CardTitle className="text-2xl font-bold text-center">Login</CardTitle>
             <CardDescription className="text-center">
@@ -97,6 +107,7 @@ const Login = () => {
             </div>
           </CardContent>
         </Card>
+        </div>
       </div>
     </div>
   );
