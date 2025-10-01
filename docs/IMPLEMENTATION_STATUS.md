@@ -169,13 +169,25 @@ The user requested a **comprehensive QA/testing scaffold** including:
 
 ## 🎯 How to Test Login Now
 
-### Method 1: Dev Bypass on Login Page (FASTEST) ⚡
+### Quick Test Status: ⚠️ Media Seed Required
+
+**Current System State:**
+- ✅ Users: 2 test accounts ready
+- ✅ Properties: 2 dev properties seeded
+- ⚠️ Photos: 0 (run media seed)
+- ⚠️ Documents: 0 (run media seed)
+- ✅ Storage: Buckets configured
+- ✅ RLS: All policies active
+
+**Action Needed:** Visit `/test-login` to seed photos and documents
+
+### Option 1: Dev Bypass (Fastest) ⚡
 1. Navigate to `/login`
-2. See yellow "DEV MODE: Quick Login" card at top
+2. See yellow "DEV MODE: Quick Login" card
 3. Click "Login as Owner" or "Login as Buyer"
 4. ✅ Instantly logged in and redirected to dashboard
 
-### Method 2: Manual Login (Traditional)
+### Option 2: Manual Login (Traditional)
 1. Navigate to `/login`
 2. Enter credentials:
    - Email: owner@ppuk.test
@@ -184,11 +196,18 @@ The user requested a **comprehensive QA/testing scaffold** including:
 4. ✅ Check browser console for debug logs
 5. ✅ Redirected to dashboard on success
 
-### Method 3: Test Login Page (Legacy)
+### Option 3: Test Login Page (Seeds Media)
 1. Navigate to `/test-login`
-2. Uses edge functions to auto-create users
-3. Shows test user cards with credentials
-4. ✅ Click to login with pre-filled creds
+2. **Important:** Wait for seeding to complete
+3. Toast will show: "Dev environment ready: 2 users, 2 properties, X photos, Y documents"
+4. Uses test user cards with credentials
+5. ✅ Click to login with pre-filled creds
+
+**After seeding, verify:**
+```sql
+SELECT COUNT(*) FROM property_photos; -- Should be 6-10
+SELECT COUNT(*) FROM documents; -- Should be 4
+```
 
 ---
 
