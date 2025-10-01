@@ -18,25 +18,25 @@ The user requested a **comprehensive QA/testing scaffold** including:
 
 ## ✅ Session 3: Authentication Fixes & Dev Bypass (LATEST)
 
-### 1. Dev Auth Bypass Component ✅ **NEW**
+### 1. Dev Auth Bypass Component ✅
 **Files Created:**
 - `src/components/DevAuthBypass.tsx` - One-click login for dev testing
 - Integrated into `/login` page (yellow card with quick access)
 - Security: Visible in dev, hidden in production
 - Features: Owner and Buyer quick login buttons
 
-### 2. Enhanced Login Debugging ✅ **NEW**
+### 2. Enhanced Login Debugging ✅
 **Changes:**
 - Added console.log statements to Login component
 - Better error reporting for auth failures
 - Clear visual feedback for successful/failed logins
 
-### 3. Fixed Edge Function ✅ **NEW**
+### 3. Fixed Edge Function ✅
 **Changes:**
 - Updated `create-test-users` to explicitly set `email_confirm: true`
 - Ensures users can login immediately without email verification
 
-### 4. Comprehensive Troubleshooting Docs ✅ **NEW**
+### 4. Comprehensive Troubleshooting Docs ✅
 **Files Created:**
 - `docs/troubleshooting-auth.md` - Complete auth diagnostic guide
   - Test credentials with UUIDs
@@ -45,7 +45,7 @@ The user requested a **comprehensive QA/testing scaffold** including:
   - Security best practices
   - Manual test procedures
 
-### 5. Node.js Seed Script ✅ **NEW**
+### 5. Node.js Seed Script ✅
 **Files Created:**
 - `scripts/seed-supabase-users.js` - Idempotent user creation
   - Uses Supabase Admin API
@@ -63,6 +63,70 @@ The user requested a **comprehensive QA/testing scaffold** including:
   - UUID: f30927f0-3945-4be4-b730-503ddfe4ed9e
   - Role: buyer
   - Profile: Exists ✅
+
+---
+
+## ✅ Session 4: Property Passports Complete (LATEST)
+
+### 1. Document Download with Signed URLs ✅
+**File:** `src/pages/PropertyPassport.tsx` (updated)
+
+**Features:**
+- Secure document downloads from private bucket
+- Generates signed URLs with 1-hour expiry
+- Replaces direct "View Document" links
+- Error handling with toast notifications
+- Opens in new tab for seamless UX
+
+### 2. Photo & Document Seed Data ✅
+**File:** `supabase/functions/seed-property-media/index.ts` (NEW)
+
+**Features:**
+- Seeds 3-5 demo photos per property (Unsplash placeholders)
+- Seeds 2 demo documents per property (EPC + Floorplan)
+- Idempotent design (checks for existing media)
+- Auto-runs on `/test-login` page load
+- Returns counts of items added
+
+**Demo Data:**
+- Photos: Living room, kitchen, bedroom, bathroom, garden
+- Documents: EPC Certificate, Floor Plan
+- All properly linked to property owners
+
+### 3. Comprehensive Testing Documentation ✅
+**File:** `docs/how-to-test-passports.md` (NEW)
+
+**Contents:**
+- 19 detailed test cases covering:
+  - Photo gallery (view, upload, validation, access control)
+  - Document management (view, upload, download, RLS)
+  - Storage bucket verification
+  - Page layout and tabs
+  - Error handling
+- SQL verification queries
+- Security checklist
+- Troubleshooting guide
+- Test report template
+
+### 4. Implementation Summary ✅
+**File:** `PROPERTY_PASSPORTS_IMPLEMENTATION.md` (NEW)
+
+**Contents:**
+- Complete feature documentation
+- Database schema details
+- RLS policy summary
+- Security validation
+- Testing workflow
+- Known limitations
+- Next steps roadmap
+
+### Storage Buckets Verified:
+- **property-photos:** public = true ✅
+- **property-documents:** public = false ✅
+
+### RLS Policies Verified:
+- **property_photos:** 3 policies (SELECT, INSERT, DELETE) ✅
+- **documents:** 3 policies (SELECT, INSERT, UPDATE) ✅
 
 ---
 

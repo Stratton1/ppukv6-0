@@ -268,17 +268,48 @@ const PropertyPassport = () => {
                     </CardHeader>
                     <CardContent>
                       <p className="text-sm text-muted-foreground mb-2">{doc.file_name}</p>
+                      {doc.file_size_bytes && (
+                        <p className="text-xs text-muted-foreground">
+                          Size: {(doc.file_size_bytes / 1024).toFixed(2)} KB
+                        </p>
+                      )}
                       {doc.description && (
-                        <p className="text-sm mb-2">{doc.description}</p>
+                        <p className="text-sm mb-2 mt-2">{doc.description}</p>
                       )}
                       {doc.ai_summary && (
                         <p className="text-sm italic text-muted-foreground mb-2">{doc.ai_summary}</p>
                       )}
-                      <a href={doc.file_url} target="_blank" rel="noopener noreferrer">
-                        <Button variant="outline" size="sm" className="mt-2">
-                          View Document
-                        </Button>
-                      </a>
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        className="mt-2"
+                        onClick={async () => {
+                          try {
+                            // Extract file path from URL
+                            const url = new URL(doc.file_url);
+                            const pathParts = url.pathname.split('/');
+                            const filePath = pathParts.slice(pathParts.indexOf('property-documents') + 1).join('/');
+                            
+                            // Generate signed URL for private bucket
+                            const { data, error } = await supabase.storage
+                              .from('property-documents')
+                              .createSignedUrl(filePath, 3600); // 1 hour expiry
+
+                            if (error) throw error;
+                            
+                            window.open(data.signedUrl, '_blank');
+                          } catch (error) {
+                            console.error('Download error:', error);
+                            toast({
+                              title: "Error",
+                              description: "Failed to generate download link",
+                              variant: "destructive",
+                            });
+                          }
+                        }}
+                      >
+                        Download Document
+                      </Button>
                     </CardContent>
                   </Card>
                 ))}

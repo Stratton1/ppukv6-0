@@ -26,14 +26,17 @@ const TestLogin = () => {
       // First try to create basic test users
       const { data: basicUsers, error: basicError } = await supabase.functions.invoke("create-test-users");
       
-      // Then seed full dev data
+      // Then seed full dev data (properties)
       const { data: seedData, error: seedError } = await supabase.functions.invoke("seed-dev-data");
+      
+      // Seed photos and documents
+      const { data: mediaData, error: mediaError } = await supabase.functions.invoke("seed-property-media");
       
       if (seedData?.success) {
         setUsersCreated(true);
         toast({
           title: "Dev environment ready",
-          description: `${seedData.users.length} users, ${seedData.properties} properties seeded`,
+          description: `${seedData.users.length} users, ${seedData.properties} properties, ${mediaData?.photosAdded || 0} photos, ${mediaData?.docsAdded || 0} documents seeded`,
         });
       }
     } catch (error: any) {
