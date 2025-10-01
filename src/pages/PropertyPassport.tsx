@@ -3,16 +3,23 @@ import { useParams, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import Navbar from "@/components/Navbar";
+import DocumentUploader from "@/components/DocumentUploader";
+import PhotoGallery from "@/components/PhotoGallery";
+import APIPreviewCard from "@/components/APIPreviewCard";
+import PassportScore from "@/components/PassportScore";
+import { mockEPCData, mockFloodData, mockHMLRData, mockPlanningData } from "@/lib/apis/mockData";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Home, MapPin, Calendar, TrendingUp, FileText, Image, History, AlertCircle } from "lucide-react";
+import { Home, MapPin, FileText, TrendingUp, Clock } from "lucide-react";
 
 const PropertyPassport = () => {
   const { id } = useParams();
   const [property, setProperty] = useState<any>(null);
   const [documents, setDocuments] = useState<any[]>([]);
+  const [photos, setPhotos] = useState<any[]>([]);
+  const [isOwner, setIsOwner] = useState(false);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
 
@@ -22,6 +29,8 @@ const PropertyPassport = () => {
 
   const fetchProperty = async () => {
     try {
+      const { data: { user } } = await supabase.auth.getUser();
+      
       const { data: propertyData, error } = await supabase
         .from("properties")
         .select("*")
@@ -30,6 +39,7 @@ const PropertyPassport = () => {
 
       if (error) throw error;
       setProperty(propertyData);
+      setIsOwner(user?.id === propertyData.claimed_by);
 
       // Fetch documents
       const { data: docsData } = await supabase
@@ -38,6 +48,14 @@ const PropertyPassport = () => {
         .eq("property_id", id);
       
       setDocuments(docsData || []);
+
+      // Fetch photos
+      const { data: photosData } = await supabase
+        .from("property_photos")
+        .select("*")
+        .eq("property_id", id);
+      
+      setPhotos(photosData || []);
     } catch (error) {
       console.error("Error:", error);
       toast({
@@ -121,10 +139,11 @@ const PropertyPassport = () => {
 
         {/* Tabs */}
         <Tabs defaultValue="overview" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-5">
+          <TabsList className="grid w-full grid-cols-6">
             <TabsTrigger value="overview">Overview</TabsTrigger>
             <TabsTrigger value="docs">Documents</TabsTrigger>
             <TabsTrigger value="photos">Photos</TabsTrigger>
+            <TabsTrigger value="apis">Data</TabsTrigger>
             <TabsTrigger value="history">History</TabsTrigger>
             <TabsTrigger value="insights">Insights</TabsTrigger>
           </TabsList>
@@ -221,13 +240,20 @@ const PropertyPassport = () => {
 
           {/* Documents Tab */}
           <TabsContent value="docs" className="space-y-4">
+            {isOwner && (
+              <div className="grid md:grid-cols-2 gap-6">
+                <DocumentUploader propertyId={property.id} onUploadComplete={fetchProperty} />
+                <PassportScore property={property} documents={documents} photos={photos} />
+              </div>
+            )}
+            
             {documents.length === 0 ? (
               <Card>
                 <CardContent className="py-12 text-center">
                   <FileText className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
                   <p className="text-lg font-medium">No documents uploaded</p>
                   <p className="text-muted-foreground">
-                    Documents will appear here once uploaded by the property owner
+                    {isOwner ? "Upload documents to complete your property passport" : "Documents will appear here once uploaded"}
                   </p>
                 </CardContent>
               </Card>
@@ -242,12 +268,17 @@ const PropertyPassport = () => {
                     </CardHeader>
                     <CardContent>
                       <p className="text-sm text-muted-foreground mb-2">{doc.file_name}</p>
-                      {doc.ai_summary && (
-                        <p className="text-sm">{doc.ai_summary}</p>
+                      {doc.description && (
+                        <p className="text-sm mb-2">{doc.description}</p>
                       )}
-                      <Button variant="outline" size="sm" className="mt-4">
-                        View Document
-                      </Button>
+                      {doc.ai_summary && (
+                        <p className="text-sm italic text-muted-foreground mb-2">{doc.ai_summary}</p>
+                      )}
+                      <a href={doc.file_url} target="_blank" rel="noopener noreferrer">
+                        <Button variant="outline" size="sm" className="mt-2">
+                          View Document
+                        </Button>
+                      </a>
                     </CardContent>
                   </Card>
                 ))}
@@ -257,19 +288,44 @@ const PropertyPassport = () => {
 
           {/* Photos Tab */}
           <TabsContent value="photos">
-            <Card>
-              <CardContent className="py-12 text-center">
-                <Image className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-                <p className="text-lg font-medium">Photo gallery coming soon</p>
-              </CardContent>
-            </Card>
+            <PhotoGallery propertyId={property.id} canUpload={isOwner} />
+          </TabsContent>
+
+          {/* APIs Tab */}
+          <TabsContent value="apis" className="space-y-6">
+            <div className="grid md:grid-cols-2 gap-6">
+              <APIPreviewCard
+                title="EPC Certificate"
+                description="Energy Performance Certificate data"
+                data={mockEPCData}
+                type="epc"
+              />
+              <APIPreviewCard
+                title="Flood Risk"
+                description="Environment Agency flood risk assessment"
+                data={mockFloodData}
+                type="flood"
+              />
+              <APIPreviewCard
+                title="Title Information"
+                description="HM Land Registry title summary"
+                data={mockHMLRData}
+                type="hmlr"
+              />
+              <APIPreviewCard
+                title="Planning History"
+                description="Local authority planning applications"
+                data={mockPlanningData}
+                type="planning"
+              />
+            </div>
           </TabsContent>
 
           {/* History Tab */}
           <TabsContent value="history">
             <Card>
               <CardContent className="py-12 text-center">
-                <History className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+                <Clock className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
                 <p className="text-lg font-medium">Property history coming soon</p>
                 <p className="text-muted-foreground">
                   Previous sales, planning applications, and more

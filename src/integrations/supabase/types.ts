@@ -205,6 +205,57 @@ export type Database = {
           },
         ]
       }
+      property_photos: {
+        Row: {
+          caption: string | null
+          created_at: string
+          file_name: string
+          file_url: string
+          id: string
+          is_featured: boolean | null
+          property_id: string
+          room_type: string | null
+          uploaded_by: string
+        }
+        Insert: {
+          caption?: string | null
+          created_at?: string
+          file_name: string
+          file_url: string
+          id?: string
+          is_featured?: boolean | null
+          property_id: string
+          room_type?: string | null
+          uploaded_by: string
+        }
+        Update: {
+          caption?: string | null
+          created_at?: string
+          file_name?: string
+          file_url?: string
+          id?: string
+          is_featured?: boolean | null
+          property_id?: string
+          room_type?: string | null
+          uploaded_by?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "property_photos_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: false
+            referencedRelation: "properties"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "property_photos_uploaded_by_fkey"
+            columns: ["uploaded_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       saved_properties: {
         Row: {
           created_at: string
