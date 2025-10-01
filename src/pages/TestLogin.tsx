@@ -15,46 +15,32 @@ const TestLogin = () => {
   const { toast } = useToast();
 
   useEffect(() => {
-    // Check if we need to create test users on first load
-    checkAndCreateTestUsers();
+    // Auto-seed on first load
+    checkAndSeedData();
   }, []);
 
-  const checkAndCreateTestUsers = async () => {
+  const checkAndSeedData = async () => {
     try {
       setCreatingUsers(true);
-      const { data, error } = await supabase.functions.invoke("create-test-users");
       
-      if (error) {
-        console.error("Error invoking function:", error);
+      // First try to create basic test users
+      const { data: basicUsers, error: basicError } = await supabase.functions.invoke("create-test-users");
+      
+      // Then seed full dev data
+      const { data: seedData, error: seedError } = await supabase.functions.invoke("seed-dev-data");
+      
+      if (seedData?.success) {
+        setUsersCreated(true);
         toast({
-          title: "Setup issue",
-          description: "Couldn't auto-create test users. Please create them manually via Register.",
-          variant: "destructive",
+          title: "Dev environment ready",
+          description: `${seedData.users.length} users, ${seedData.properties} properties seeded`,
         });
-        return;
-      }
-      
-      if (data?.results) {
-        const allExistOrCreated = data.results.every(
-          (r: any) => r.status === "created" || r.status === "already_exists"
-        );
-        
-        if (allExistOrCreated) {
-          setUsersCreated(true);
-          const newUsers = data.results.filter((r: any) => r.status === "created");
-          if (newUsers.length > 0) {
-            toast({
-              title: "Test users ready",
-              description: `${newUsers.length} test user(s) created successfully`,
-            });
-          }
-        }
       }
     } catch (error: any) {
-      console.error("Error creating test users:", error);
+      console.error("Error seeding data:", error);
       toast({
         title: "Note",
-        description: "Test users may need to be created manually. Use the Register page.",
+        description: "Auto-seeding may have failed. Use manual registration if needed.",
         variant: "default",
       });
     } finally {
