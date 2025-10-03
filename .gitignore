@@ -1,4 +1,6 @@
+# ----------------------------------------
 # Logs
+# ----------------------------------------
 logs
 *.log
 npm-debug.log*
@@ -7,12 +9,33 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
+# ----------------------------------------
+# Dependencies / Builds
+# ----------------------------------------
 node_modules
 dist
 dist-ssr
+
+# ----------------------------------------
+# Environment files (DO NOT COMMIT)
+# Keep the template tracked so others know what to set.
+# ----------------------------------------
+.env
+.env.local
+.env.development
+.env.production
+.env.test
+.env.*.local
+!.env.example
+
+# ----------------------------------------
+# Local-only artifacts
+# ----------------------------------------
 *.local
 
-# Editor directories and files
+# ----------------------------------------
+# Editor / OS
+# ----------------------------------------
 .vscode/*
 !.vscode/extensions.json
 .idea
@@ -22,3 +45,20 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# ----------------------------------------
+# Caches (safe to ignore)
+# ----------------------------------------
+.eslintcache
+.stylelintcache
+.cache
+.parcel-cache
+.turbo
+coverage
+
+# ----------------------------------------
+# Supabase (ignore transient local files, keep project files)
+# ----------------------------------------
+supabase/.branches
+supabase/.temp
+supabase/.env
