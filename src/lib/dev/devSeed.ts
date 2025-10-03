@@ -18,8 +18,8 @@ type EnumFetchResult = string | null;
 function sanitizeStrings<T extends Record<string, any>>(obj: T): T {
   const copy = { ...obj };
   for (const k of Object.keys(copy)) {
-    if (typeof copy[k] === "string" && copy[k].trim() === "") {
-      copy[k] = "(auto)";
+    if (typeof copy[k] === "string" && (copy[k] as string).trim() === "") {
+      (copy as any)[k] = "(auto)";
     }
   }
   return copy;
@@ -34,7 +34,7 @@ function mentions(err: any, ...needles: string[]) {
 const isFK = (err: any) => err?.code === "23503"; // foreign key
 const isUnique = (err: any) => err?.code === "23505"; // unique
 
-async function whichProfileKey(supabase: any): Promise<"user_id"|"id"> {
+async function whichProfileKey(supabase: typeof import('@/integrations/supabase/client').supabase): Promise<"user_id"|"id"> {
   const a = await supabase.from("profiles").select("user_id", { head: true, count: "exact" }).limit(0);
   if (!a.error) return "user_id";
   const b = await supabase.from("profiles").select("id", { head: true, count: "exact" }).limit(0);
@@ -64,27 +64,54 @@ function getAllowedEnumValue(enumName: string, candidate?: string | null, fallba
 /**
  * Ensure a profile row exists for the user - minimal, schema-aware version
  */
-export async function ensureProfile(supabase: any, user: any) {
+export async function ensureProfile(supabase: typeof import('@/integrations/supabase/client').supabase, user: any) {
   console.log("ensureProfile(): start", user?.id);
+  
+  // Detect which key to use (user_id vs id)
   const key = await whichProfileKey(supabase);
   const keyEq = key === "user_id" ? { user_id: user.id } : { id: user.id };
 
   // If a row already exists, return it.
   const existing = await supabase.from("profiles").select("*").match(keyEq).maybeSingle();
-  if (existing.data) return existing.data;
-
-  // Minimal insert with just the linking key and a friendly name if column exists.
-  const base: any = { ...keyEq };
-  // Try full_name if column exists (probe with a 0-row select)
-  const probe = await supabase.from("profiles").select("full_name", { head: true, count: "exact" }).limit(0);
-  if (!probe.error) base.full_name = "Test User";
-
-  const ins = await supabase.from("profiles").insert(base).select("*").single();
-  if (ins.error) {
-    console.error("ensureProfile(): insert failed", { error: ins.error, payload: base });
-    throw new Error(`profiles insert failed: ${ins.error.message}`);
+  if (existing.data) {
+    console.log("ensureProfile(): existing profile found", existing.data.id);
+    return existing.data;
   }
-  return ins.data;
+
+  // Build minimal payload with only safe columns
+  const base: any = { ...keyEq };
+  
+  // Try to add full_name if column exists
+  try {
+    const probe = await supabase.from("profiles").select("full_name", { head: true, count: "exact" }).limit(0);
+    if (!probe.error) {
+      base.full_name = "Dev User";
+    }
+  } catch (e) {
+    console.log("ensureProfile(): full_name column not available");
+  }
+  
+  // Try to add role if column exists
+  try {
+    const roleProbe = await supabase.from("profiles").select("role", { head: true, count: "exact" }).limit(0);
+    if (!roleProbe.error) {
+      const safeRole = getAllowedEnumValue(["owner", "buyer", "other"], "owner");
+      if (safeRole) base.role = safeRole;
+    }
+  } catch (e) {
+    console.log("ensureProfile(): role column not available");
+  }
+
+  console.log("ensureProfile(): attempting upsert with", Object.keys(base));
+  const result = await supabase.from("profiles").upsert(base, { onConflict: key }).select().single();
+  
+  if (result.error) {
+    console.error("ensureProfile(): upsert failed", result.error);
+    throw new Error(`Profile creation failed: ${result.error.message}`);
+  }
+  
+  console.log("ensureProfile(): success", result.data?.id);
+  return result.data;
 }
 
 /**
@@ -322,51 +349,82 @@ export async function ensureUser(
 /**
  * Ensure the current user has a property - robust with profile guarantee
  */
-export async function ensureOwnerProperty(supabase: any, user: any) {
+export async function ensureOwnerProperty(supabase: typeof import('@/integrations/supabase/client').supabase, user: any): Promise<DevSeedResult> {
   console.log("ensureOwnerProperty(): start");
   await ensureProfile(supabase, user);
 
   // Do we already have a property?
-  const mine = await supabase.from("properties").select("id").eq("owner_id", user.id).limit(1).maybeSingle();
+  const mine = await supabase.from("properties").select("id").eq("claimed_by", user.id).limit(1).maybeSingle();
   if (mine.data?.id) {
     console.log("ensureOwnerProperty(): already have property", mine.data.id);
-    return mine.data.id;
+    return {
+      success: true,
+      message: `Property already exists`,
+      data: { propertyId: mine.data.id }
+    };
   }
 
-  const args = {
-    p_title: "Dev Property",
-    p_address_line_1: "1 Demo Street",
-    p_city: "London",
-    p_postcode: "EC1A 1AA",
-    p_country: "UK"
+  // Try RPC first
+  try {
+    console.log("ensureOwnerProperty(): trying RPC ppuk_create_property_min");
+    const { data: rpcData, error: rpcError } = await supabase.rpc('ppuk_create_property_min', { 
+      owner_id: user.id 
+    });
+    
+    if (!rpcError && rpcData) {
+      console.log("ensureOwnerProperty(): RPC success", rpcData);
+      return {
+        success: true,
+        message: `Property created via RPC`,
+        data: { propertyId: rpcData }
+      };
+    }
+    
+    // If RPC not found (error 42883) or RLS blocked, fallback to client insert
+    if (rpcError && (rpcError.code === '42883' || rpcError.message.includes('permission denied'))) {
+      console.log("ensureOwnerProperty(): RPC failed, falling back to client insert", rpcError.message);
+    } else {
+      console.log("ensureOwnerProperty(): RPC failed with unexpected error", rpcError);
+    }
+  } catch (rpcError: any) {
+    console.log("ensureOwnerProperty(): RPC call failed", rpcError.message);
+  }
+
+  // Fallback to minimal client insert
+  console.log("ensureOwnerProperty(): trying minimal client insert");
+  
+  // Try with minimal columns first
+  const minimalPayload = {
+    claimed_by: user.id,
+    address_line_1: "1 Demo Street",
+    city: "London",
+    postcode: "EC1A 1AA"
   };
 
-  // Call RPC for safe insert (it sets safe enum defaults server-side)
-  const rpc = await supabase.rpc("dev_create_owner_property", args);
-  if (rpc.error) {
-    console.error("ensureOwnerProperty(): RPC failed", { error: rpc.error, args });
-    // As a fallback, try plain insert with minimal columns (no enums)
-    const ins = await supabase.from("properties").insert({
-      owner_id: user.id,
-      title: args.p_title,
-      address_line_1: args.p_address_line_1,
-      city: args.p_city,
-      postcode: args.p_postcode,
-      country: args.p_country
-    }).select("id").single();
-    if (ins.error) {
-      console.error("ensureOwnerProperty(): fallback insert failed", ins.error);
-      throw new Error(`property insert failed: ${ins.error.message}`);
-    }
-    return ins.data.id;
+  let ins = await supabase.from("properties").insert(minimalPayload).select("id").single();
+  
+  // If FK error on profiles, re-run ensureProfile() and retry once
+  if (ins.error && ins.error.code === '23503') {
+    console.log("ensureOwnerProperty(): FK error, re-ensuring profile and retrying");
+    await ensureProfile(supabase, user);
+    ins = await supabase.from("properties").insert(minimalPayload).select("id").single();
   }
-
-  // If RPC returns data as { dev_create_owner_property: uuid } or as a single scalar, normalize:
-  const newId = (rpc.data && (rpc.data.dev_create_owner_property || rpc.data.id || rpc.data)) ?? null;
-  if (!newId) {
-    console.warn("ensureOwnerProperty(): unexpected RPC return shape", rpc.data);
+  
+  if (ins.error) {
+    console.error("ensureOwnerProperty(): client insert failed", ins.error);
+    return {
+      success: false,
+      message: `Property creation failed: ${ins.error.message}`,
+      error: ins.error.message,
+      data: ins.error
+    };
   }
-  return newId;
+  
+  return {
+    success: true,
+    message: `Property created via client insert`,
+    data: { propertyId: ins.data.id }
+  };
 }
 
 /**
@@ -421,16 +479,16 @@ export async function seedSamplePhoto(propertyId: string): Promise<DevSeedResult
     // Check if type column exists
     const hasTypeColumn = await probeHasTypeColumn();
 
-    // Insert into media table
+    // Insert into media table with minimal safe fields
     const mediaData: any = {
       property_id: propertyId,
       url: urlData.publicUrl,
-      caption: 'Sample photo uploaded via test-login',
-      room_type: 'living_room',
-      uploaded_by: user.id,
-      mime_type: 'image/jpeg'
+      mime_type: 'image/jpeg',
+      file_name: fileName,
+      uploaded_by: user.id
     };
 
+    // Only add optional fields if they exist
     if (hasTypeColumn) {
       mediaData.type = 'photo';
     }
@@ -510,17 +568,14 @@ export async function seedSampleDocument(propertyId: string): Promise<DevSeedRes
       };
     }
 
-    // Insert into documents table with tolerant mapping
+    // Insert into documents table with minimal safe fields (avoid enums)
     const { data: docInsert, error: docError } = await supabase
       .from('documents')
       .insert({
         property_id: propertyId,
-        document_type: 'other',
         file_name: fileName,
-        file_url: uploadData.path,
         file_size_bytes: file.size,
         mime_type: 'application/pdf',
-        description: 'Sample document uploaded via test-login',
         uploaded_by: user.id
       })
       .select('id')
@@ -581,7 +636,11 @@ export async function oneClickDevSetup(): Promise<DevSeedResult> {
     await ensureProfile(supabase, user);
 
     // 3. Create property using RPC
-    const propertyId = await ensureOwnerProperty(supabase, user);
+    const propertyResult = await ensureOwnerProperty(supabase, user);
+    if (!propertyResult.success || !propertyResult.data?.propertyId) {
+      throw new Error(`Property creation failed: ${propertyResult.message}`);
+    }
+    const propertyId = propertyResult.data.propertyId;
 
     // 4. Seed sample photo
     const photoResult = await seedSamplePhoto(propertyId);

@@ -28,10 +28,17 @@ interface BucketInfo {
 interface MediaItem {
   id: string;
   property_id: string;
-  type: string;
-  url: string;
-  caption: string | null;
-  created_at: string;
+  type?: string;
+  url?: string;
+  caption?: string;
+  title?: string;
+  mime_type?: string;
+  file_name?: string;
+  file_path?: string;
+  file_size_bytes?: number;
+  room_type?: string;
+  uploaded_by?: string;
+  created_at?: string;
 }
 
 interface DocumentItem {
@@ -435,7 +442,7 @@ const DebugStorage = () => {
                   <div>
                     <p className="font-medium">{item.caption || 'Untitled'}</p>
                     <p className="text-sm text-muted-foreground">
-                      {item.type} • {new Date(item.created_at).toLocaleDateString()}
+                      {item.type} • {item.created_at ? new Date(item.created_at).toLocaleDateString() : 'Unknown date'}
                     </p>
                   </div>
                   <Badge variant="outline">{item.type}</Badge>

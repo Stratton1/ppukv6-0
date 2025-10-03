@@ -15,10 +15,13 @@ interface PhotoGalleryProps {
 
 interface Photo {
   id: string;
-  url: string;
-  caption: string | null;
-  room_type: string | null;
-  created_at: string;
+  property_id: string;
+  url?: string;
+  caption?: string;
+  room_type?: string;
+  type?: string;
+  mime_type?: string;
+  created_at?: string;
 }
 
 const PhotoGallery = ({ propertyId, canUpload = false }: PhotoGalleryProps) => {
@@ -51,7 +54,7 @@ const PhotoGallery = ({ propertyId, canUpload = false }: PhotoGalleryProps) => {
         console.log("Type column not found, falling back to mime_type filter");
         const fallbackResult = await supabase
           .from("media")
-          .select("id, property_id, url, caption, room_type, created_at, mime_type")
+          .select("id, property_id, url, caption, room_type, created_at, mime_type, type")
           .eq("property_id", propertyId)
           .ilike("mime_type", "image/%")
           .order("created_at", { ascending: false });

@@ -413,7 +413,7 @@ export function generateMockCrimeData(property: PropertyIdentifier): CrimeData {
       })),
       crimeRate: Math.floor(Math.random() * 20) + 5
     },
-    safetyRating: ['Very Safe', 'Safe', 'Moderate', 'Concerning', 'High Risk'][Math.floor(Math.random() * 5)],
+    safetyRating: (['Very Safe', 'Safe', 'Moderate', 'Concerning', 'High Risk'] as const)[Math.floor(Math.random() * 5)],
     comparison: {
       nationalAverage: 12.5,
       localAuthorityAverage: 15.2,
