@@ -59,9 +59,5 @@ export const mockPlanningData = {
       dateDecided: "2019-11-20",
     },
   ],
-  constraints: [
-    "Not in conservation area",
-    "Not a listed building",
-    "Article 4 direction applies",
-  ],
+  constraints: ["Not in conservation area", "Not a listed building", "Article 4 direction applies"],
 };

@@ -1,11 +1,13 @@
 # Build Repair Log
 
 ## Summary
+
 Fixed Vite + React + TypeScript + Tailwind (shadcn) build issues to get the app compiling and running cleanly.
 
 ## Files Modified
 
 ### Configuration Files (Overwritten)
+
 - `vite.config.ts` - Added @ alias resolution and proper Vite config
 - `tsconfig.json` - Updated with proper module resolution and paths
 - `tailwind.config.ts` - Created canonical shadcn setup
@@ -14,6 +16,7 @@ Fixed Vite + React + TypeScript + Tailwind (shadcn) build issues to get the app 
 - `package.json` - Added typecheck script
 
 ### Import Path Fixes
+
 - `src/components/business/APIPreviewCard.tsx` - Fixed UI imports to use @ alias
 - `src/components/business/DocumentUploader.tsx` - Fixed UI imports to use @ alias
 - `src/components/business/PassportScore.tsx` - Fixed UI imports to use @ alias
@@ -25,6 +28,7 @@ Fixed Vite + React + TypeScript + Tailwind (shadcn) build issues to get the app 
 - `src/pages/dev/TestLogin.tsx` - Fixed const assignment errors and function signatures
 
 ### Export Fixes
+
 - `src/components/index.ts` - Fixed PropertyDataPanel export (named vs default)
 - `src/pages/index.ts` - Fixed Index export and removed duplicate
 - `src/pages/Index.tsx` - Fixed import path
@@ -34,34 +38,40 @@ Fixed Vite + React + TypeScript + Tailwind (shadcn) build issues to get the app 
 ## Remaining Issues
 
 ### TypeScript Errors (Non-blocking)
+
 - Supabase `media` table not in generated types (expected - database not migrated)
 - Some type mismatches in PhotoGallery and DebugStorage components
 - Missing React imports in some files (non-critical for runtime)
 
 ### Database Schema Issues
+
 - `media` table doesn't exist in Supabase (needs migration)
 - Components expect `media` table but it's not in the schema
 - This is expected behavior until database migrations are run
 
 ## How to Run
+
 ```bash
 npm install
 npm run dev
 ```
 
 ## Server Status
+
 - ✅ Dev server running on http://localhost:8080
 - ✅ No Vite overlay errors
 - ✅ App loads without crashes
 - ⚠️ Some TypeScript errors remain (non-blocking)
 
 ## Next Steps
+
 1. Run database migrations to create `media` table
 2. Fix remaining TypeScript errors
 3. Test all pages and functionality
 4. Push to Git repository
 
 ## Dependencies Added
+
 - `tailwindcss`, `postcss`, `autoprefixer`, `tailwindcss-animate`
 - `@types/node` for TypeScript support
 - All shadcn UI components already present
@@ -73,6 +83,7 @@ npm run dev
 ### Changes Made
 
 #### CI/CD Pipeline
+
 - **`.github/workflows/ci.yml`** - Created GitHub Actions workflow
   - Triggers on push/PR to main/develop branches
   - Node 20.x matrix strategy
@@ -80,6 +91,7 @@ npm run dev
   - Caching enabled for npm dependencies
 
 #### Code Formatting
+
 - **`package.json`** - Added Prettier dependency and scripts
   - `prettier: "^3.3.3"` in devDependencies
   - `format` script: "prettier --write ."
@@ -93,6 +105,7 @@ npm run dev
   - Arrow parens: avoid
 
 #### ESLint Configuration
+
 - **`eslint.config.js`** - Enhanced ESLint rules
   - Already had `eslint:recommended` and `@typescript-eslint/recommended`
   - Added React hooks recommended rules
@@ -102,6 +115,7 @@ npm run dev
   - Kept type-safety rules intact
 
 #### Documentation
+
 - **`docs/CONTRIBUTING.md`** - Created contributor guidelines
   - Development setup instructions
   - Environment requirements
@@ -110,6 +124,7 @@ npm run dev
   - How to fix common CI failures
 
 ### Files Created/Modified
+
 - `.github/workflows/ci.yml` (NEW)
 - `.prettierrc` (NEW)
 - `docs/CONTRIBUTING.md` (NEW)
@@ -118,6 +133,7 @@ npm run dev
 - `docs/REPAIR_LOG.md` (UPDATED - this entry)
 
 ### CI Pipeline Features
+
 - **Type Safety**: TypeScript compilation check
 - **Code Quality**: ESLint with React and TypeScript rules
 - **Formatting**: Prettier format checking
@@ -126,6 +142,7 @@ npm run dev
 - **Matrix Strategy**: Node 20.x support
 
 ### Next Steps
+
 1. Create feature branch: `ci/types-rpc-hardening`
 2. Commit changes with conventional commit messages
 3. Push branch and create pull request
@@ -133,6 +150,7 @@ npm run dev
 5. Merge to main after review
 
 ### Benefits
+
 - **Prevents Regressions**: Automated checks on every PR
 - **Code Consistency**: Standardized formatting across team
 - **Type Safety**: Catches TypeScript errors before merge

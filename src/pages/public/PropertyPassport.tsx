@@ -26,17 +26,15 @@ const PropertyPassport = () => {
 
   const fetchProperty = async () => {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
       let propertyData;
-      
+
       if (id) {
         // Specific property ID provided
-        const { data, error } = await supabase
-          .from("properties")
-          .select("*")
-          .eq("id", id)
-          .single();
+        const { data, error } = await supabase.from("properties").select("*").eq("id", id).single();
 
         if (error) throw error;
         propertyData = data;
@@ -50,7 +48,7 @@ const PropertyPassport = () => {
           .limit(1);
 
         if (queryError) {
-          console.warn('Failed to query user properties:', queryError);
+          console.warn("Failed to query user properties:", queryError);
         }
 
         if (userProperties && userProperties.length > 0) {
@@ -63,7 +61,7 @@ const PropertyPassport = () => {
           return;
         }
       } else {
-        throw new Error('No property ID provided and no authenticated user');
+        throw new Error("No property ID provided and no authenticated user");
       }
 
       setProperty(propertyData);
@@ -74,7 +72,7 @@ const PropertyPassport = () => {
         .from("documents")
         .select("*")
         .eq("property_id", propertyData.id);
-      
+
       setDocuments(docsData || []);
 
       // Fetch photos
@@ -83,7 +81,7 @@ const PropertyPassport = () => {
         .select("*")
         .eq("property_id", propertyData.id)
         .eq("type", "photo");
-      
+
       setPhotos(photosData || []);
     } catch (error) {
       console.error("Error:", error);
@@ -118,10 +116,9 @@ const PropertyPassport = () => {
         <div className="container mx-auto px-4 py-16 text-center">
           <h1 className="text-2xl font-bold mb-4">No Property Yet</h1>
           <p className="text-muted-foreground mb-6">
-            {import.meta.env.DEV 
+            {import.meta.env.DEV
               ? "Use Test Login to create a property and start building your passport."
-              : "You haven't claimed any properties yet. Search for a property to get started."
-            }
+              : "You haven't claimed any properties yet. Search for a property to get started."}
           </p>
           <div className="flex gap-4 justify-center">
             {import.meta.env.DEV && (
@@ -141,7 +138,7 @@ const PropertyPassport = () => {
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
-      
+
       <div className="container mx-auto px-4 py-8">
         {/* Header */}
         <div className="mb-8">
@@ -150,16 +147,16 @@ const PropertyPassport = () => {
               <h1 className="text-3xl font-bold mb-2">{property.address_line_1}</h1>
               <div className="flex items-center text-muted-foreground">
                 <MapPin className="h-4 w-4 mr-1" />
-                <span>{property.city}, {property.postcode}</span>
+                <span>
+                  {property.city}, {property.postcode}
+                </span>
               </div>
             </div>
             <div className="text-right">
               <Badge variant="outline" className="mb-2">
                 {property.ppuk_reference}
               </Badge>
-              <p className="text-sm text-muted-foreground">
-                PPUK Reference
-              </p>
+              <p className="text-sm text-muted-foreground">PPUK Reference</p>
             </div>
           </div>
 
@@ -198,10 +195,12 @@ const PropertyPassport = () => {
                   <CardTitle className="text-sm font-medium">Property Type</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-2xl font-bold capitalize">{property.property_type.replace('_', ' ')}</p>
+                  <p className="text-2xl font-bold capitalize">
+                    {property.property_type.replace("_", " ")}
+                  </p>
                   {property.property_style && (
                     <p className="text-sm text-muted-foreground capitalize mt-1">
-                      {property.property_style.replace('_', ' ')}
+                      {property.property_style.replace("_", " ")}
                     </p>
                   )}
                 </CardContent>
@@ -247,7 +246,7 @@ const PropertyPassport = () => {
                 </CardHeader>
                 <CardContent>
                   <p className="text-2xl font-bold capitalize">{property.tenure}</p>
-                  {property.tenure === 'leasehold' && property.lease_years_remaining && (
+                  {property.tenure === "leasehold" && property.lease_years_remaining && (
                     <p className="text-sm text-muted-foreground mt-1">
                       {property.lease_years_remaining} years remaining
                     </p>
@@ -288,24 +287,26 @@ const PropertyPassport = () => {
                 <PassportScore property={property} documents={documents} photos={photos} />
               </div>
             )}
-            
+
             {documents.length === 0 ? (
               <Card>
                 <CardContent className="py-12 text-center">
                   <FileText className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
                   <p className="text-lg font-medium">No documents uploaded</p>
                   <p className="text-muted-foreground">
-                    {isOwner ? "Upload documents to complete your property passport" : "Documents will appear here once uploaded"}
+                    {isOwner
+                      ? "Upload documents to complete your property passport"
+                      : "Documents will appear here once uploaded"}
                   </p>
                 </CardContent>
               </Card>
             ) : (
               <div className="grid md:grid-cols-2 gap-4">
-                {documents.map((doc) => (
+                {documents.map(doc => (
                   <Card key={doc.id}>
                     <CardHeader>
                       <CardTitle className="text-base capitalize">
-                        {doc.document_type.replace('_', ' ')}
+                        {doc.document_type.replace("_", " ")}
                       </CardTitle>
                     </CardHeader>
                     <CardContent>
@@ -315,33 +316,35 @@ const PropertyPassport = () => {
                           Size: {(doc.file_size_bytes / 1024).toFixed(2)} KB
                         </p>
                       )}
-                      {doc.description && (
-                        <p className="text-sm mb-2 mt-2">{doc.description}</p>
-                      )}
+                      {doc.description && <p className="text-sm mb-2 mt-2">{doc.description}</p>}
                       {doc.ai_summary && (
-                        <p className="text-sm italic text-muted-foreground mb-2">{doc.ai_summary}</p>
+                        <p className="text-sm italic text-muted-foreground mb-2">
+                          {doc.ai_summary}
+                        </p>
                       )}
-                      <Button 
-                        variant="outline" 
-                        size="sm" 
+                      <Button
+                        variant="outline"
+                        size="sm"
                         className="mt-2"
                         onClick={async () => {
                           try {
                             // Extract file path from URL
                             const url = new URL(doc.file_url);
-                            const pathParts = url.pathname.split('/');
-                            const filePath = pathParts.slice(pathParts.indexOf('property-documents') + 1).join('/');
-                            
+                            const pathParts = url.pathname.split("/");
+                            const filePath = pathParts
+                              .slice(pathParts.indexOf("property-documents") + 1)
+                              .join("/");
+
                             // Generate signed URL for private bucket
                             const { data, error } = await supabase.storage
-                              .from('property-documents')
+                              .from("property-documents")
                               .createSignedUrl(filePath, 3600); // 1 hour expiry
 
                             if (error) throw error;
-                            
-                            window.open(data.signedUrl, '_blank');
+
+                            window.open(data.signedUrl, "_blank");
                           } catch (error) {
-                            console.error('Download error:', error);
+                            console.error("Download error:", error);
                             toast({
                               title: "Error",
                               description: "Failed to generate download link",

@@ -21,7 +21,9 @@ const APIPreviewCard = ({ title, description, data, type }: APIPreviewCardProps)
                 <div className="text-sm text-muted-foreground">Current Rating</div>
               </div>
               <div>
-                <div className="text-2xl font-semibold text-muted-foreground">{data.potentialRating}</div>
+                <div className="text-2xl font-semibold text-muted-foreground">
+                  {data.potentialRating}
+                </div>
                 <div className="text-xs text-muted-foreground">Potential</div>
               </div>
             </div>
@@ -36,7 +38,9 @@ const APIPreviewCard = ({ title, description, data, type }: APIPreviewCardProps)
               </div>
               <div className="flex justify-between text-sm">
                 <span>Expires</span>
-                <span className="font-medium">{new Date(data.expiryDate).toLocaleDateString()}</span>
+                <span className="font-medium">
+                  {new Date(data.expiryDate).toLocaleDateString()}
+                </span>
               </div>
             </div>
             {data.recommendations && (
@@ -52,14 +56,19 @@ const APIPreviewCard = ({ title, description, data, type }: APIPreviewCardProps)
           </div>
         );
 
-      case "flood":
+      case "flood": {
         const getRiskColor = (risk: string) => {
           switch (risk.toLowerCase()) {
-            case "very low": return "text-green-600";
-            case "low": return "text-blue-600";
-            case "medium": return "text-orange-600";
-            case "high": return "text-red-600";
-            default: return "";
+            case "very low":
+              return "text-green-600";
+            case "low":
+              return "text-blue-600";
+            case "medium":
+              return "text-orange-600";
+            case "high":
+              return "text-red-600";
+            default:
+              return "";
           }
         };
 
@@ -103,6 +112,7 @@ const APIPreviewCard = ({ title, description, data, type }: APIPreviewCardProps)
             )}
           </div>
         );
+      }
 
       case "hmlr":
         return (
@@ -123,13 +133,16 @@ const APIPreviewCard = ({ title, description, data, type }: APIPreviewCardProps)
                 <div className="flex justify-between text-sm">
                   <span>Current</span>
                   <span className="font-medium">
-                    £{data.pricePaid.toLocaleString()} ({new Date(data.dateOfPurchase).getFullYear()})
+                    £{data.pricePaid.toLocaleString()} (
+                    {new Date(data.dateOfPurchase).getFullYear()})
                   </span>
                 </div>
                 {data.previousSales?.map((sale: any, i: number) => (
                   <div key={i} className="flex justify-between text-sm text-muted-foreground">
                     <span>Previous</span>
-                    <span>£{sale.price.toLocaleString()} ({new Date(sale.date).getFullYear()})</span>
+                    <span>
+                      £{sale.price.toLocaleString()} ({new Date(sale.date).getFullYear()})
+                    </span>
                   </div>
                 ))}
               </div>

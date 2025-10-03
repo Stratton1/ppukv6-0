@@ -141,23 +141,27 @@ PPUKv6-0/
 ## 🎯 **Design Principles**
 
 ### **1. Separation of Concerns**
+
 - **Business Logic**: `src/lib/` - Pure business logic, no UI dependencies
 - **UI Components**: `src/components/` - Reusable, composable UI elements
 - **Pages**: `src/pages/` - Route-level components, organized by access level
 - **Integrations**: `src/integrations/` - External service connections
 
 ### **2. Access Level Organization**
+
 - **Public Pages**: No authentication required
 - **Auth Pages**: Authentication flows
 - **Dashboard Pages**: Authenticated user areas
 - **Dev Pages**: Development and debugging tools
 
 ### **3. Development vs Production**
+
 - **Production Code**: `src/` - Clean, optimized, production-ready
 - **Development Tools**: `dev/` - Scripts, tests, documentation
 - **Configuration**: `config/` - Environment-specific settings
 
 ### **4. Scalability**
+
 - **Modular Components**: Easy to find and modify
 - **Clear Boundaries**: Each directory has a single responsibility
 - **Extensible**: Easy to add new features without restructuring
@@ -165,18 +169,21 @@ PPUKv6-0/
 ## 🚀 **Benefits of This Structure**
 
 ### **For Developers**
+
 - **Fast Navigation**: Know exactly where to find any file
 - **Clear Dependencies**: Import paths reflect architecture
 - **Easy Testing**: Components are isolated and testable
 - **Scalable**: Add new features without restructuring
 
 ### **For Maintainers**
+
 - **Clear Ownership**: Each directory has a clear purpose
 - **Easy Refactoring**: Changes are localized
 - **Documentation**: Structure is self-documenting
 - **Consistency**: All similar files are grouped together
 
 ### **For New Team Members**
+
 - **Intuitive**: Structure matches mental model
 - **Self-Documenting**: Directory names explain purpose
 - **Consistent**: Same patterns throughout
@@ -194,17 +201,17 @@ PPUKv6-0/
 
 ```typescript
 // Component imports
-import { PropertyCard, Navbar } from '@/components';
+import { PropertyCard, Navbar } from "@/components";
 
 // Page imports
-import { Home, Dashboard } from '@/pages';
+import { Home, Dashboard } from "@/pages";
 
 // Utility imports
-import { devSeed } from '@/lib/dev/devSeed';
-import { formatCurrency } from '@/lib/utils';
+import { devSeed } from "@/lib/dev/devSeed";
+import { formatCurrency } from "@/lib/utils";
 
 // Type imports
-import type { PropertyData } from '@/types/api';
+import type { PropertyData } from "@/types/api";
 ```
 
 ## 🎯 **Next Steps**

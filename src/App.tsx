@@ -14,7 +14,7 @@ import {
   Settings,
   TestLogin,
   DebugStorage,
-  NotFound
+  NotFound,
 } from "./pages";
 
 const queryClient = new QueryClient();

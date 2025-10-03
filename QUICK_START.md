@@ -3,12 +3,14 @@
 ## 🚀 Get Testing in 30 Seconds
 
 ### Option 1: Auto-Create Test Users (Recommended)
+
 1. Navigate to `/test-login` in your app
 2. Wait for "Test users ready!" message
 3. Click "Login as Test Owner" or "Login as Test Buyer"
 4. Start testing!
 
 ### Option 2: Manual Registration
+
 If auto-creation doesn't work:
 
 1. Go to `/register`
@@ -29,6 +31,7 @@ If auto-creation doesn't work:
 ## What Can Test Users Do?
 
 ### Test Owner (`owner@ppuk.test`)
+
 ✅ Claim properties via `/claim`
 ✅ Upload documents (EPC, floorplans, etc.)
 ✅ Upload property photos
@@ -36,6 +39,7 @@ If auto-creation doesn't work:
 ✅ Update property details
 
 ### Test Buyer (`buyer@ppuk.test`)
+
 ✅ Search properties via `/search`
 ✅ View property passports
 ✅ See uploaded documents
@@ -65,15 +69,18 @@ If auto-creation doesn't work:
 ## Troubleshooting
 
 **"Invalid login credentials"**
+
 - Refresh `/test-login` page to trigger auto-creation
 - Or manually create accounts via `/register`
 
 **Test users not created?**
+
 - Edge function may need a moment to deploy
 - Wait 30 seconds and refresh the page
 - Fallback: Use manual registration
 
 **Can't upload files?**
+
 - Check file size (10MB docs, 5MB photos)
 - Supported formats: PDF, DOCX, PNG, JPG, JPEG
 
@@ -84,6 +91,7 @@ View your Lovable Cloud backend using the button in the AI chat or by checking t
 ## Next Steps After Testing
 
 Once basic testing is complete, you're ready for:
+
 1. Real API integration (EPC, Flood Risk, HMLR, Planning)
 2. AI document analysis
 3. Enhanced property walkthroughs

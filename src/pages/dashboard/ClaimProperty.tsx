@@ -5,7 +5,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { ArrowRight, ArrowLeft, Home } from "lucide-react";
@@ -35,8 +41,10 @@ const ClaimProperty = () => {
   const handleSubmit = async () => {
     setLoading(true);
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
       if (!user) {
         toast({
           title: "Error",
@@ -49,22 +57,24 @@ const ClaimProperty = () => {
 
       const { data, error } = await supabase
         .from("properties")
-        .insert([{
-          address_line_1: formData.addressLine1,
-          address_line_2: formData.addressLine2 || null,
-          city: formData.city,
-          postcode: formData.postcode.toUpperCase(),
-          property_type: formData.propertyType as any,
-          property_style: formData.propertyStyle as any || null,
-          bedrooms: formData.bedrooms ? parseInt(formData.bedrooms) : null,
-          bathrooms: formData.bathrooms ? parseInt(formData.bathrooms) : null,
-          total_floor_area_sqm: formData.floorArea ? parseFloat(formData.floorArea) : null,
-          year_built: formData.yearBuilt ? parseInt(formData.yearBuilt) : null,
-          tenure: formData.tenure as any,
-          title_number: formData.titleNumber || null,
-          claimed_by: user.id,
-          completion_percentage: 30,
-        }])
+        .insert([
+          {
+            address_line_1: formData.addressLine1,
+            address_line_2: formData.addressLine2 || null,
+            city: formData.city,
+            postcode: formData.postcode.toUpperCase(),
+            property_type: formData.propertyType as any,
+            property_style: (formData.propertyStyle as any) || null,
+            bedrooms: formData.bedrooms ? parseInt(formData.bedrooms) : null,
+            bathrooms: formData.bathrooms ? parseInt(formData.bathrooms) : null,
+            total_floor_area_sqm: formData.floorArea ? parseFloat(formData.floorArea) : null,
+            year_built: formData.yearBuilt ? parseInt(formData.yearBuilt) : null,
+            tenure: formData.tenure as any,
+            title_number: formData.titleNumber || null,
+            claimed_by: user.id,
+            completion_percentage: 30,
+          },
+        ])
         .select()
         .single();
 
@@ -93,7 +103,7 @@ const ClaimProperty = () => {
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
-      
+
       <div className="container mx-auto px-4 py-8 max-w-2xl">
         <div className="mb-8">
           <h1 className="text-3xl font-bold mb-2">Claim Your Property</h1>
@@ -131,7 +141,7 @@ const ClaimProperty = () => {
                     id="postcode"
                     placeholder="SW1A 1AA"
                     value={formData.postcode}
-                    onChange={(e) => setFormData({ ...formData, postcode: e.target.value })}
+                    onChange={e => setFormData({ ...formData, postcode: e.target.value })}
                     required
                   />
                 </div>
@@ -141,7 +151,7 @@ const ClaimProperty = () => {
                     id="addressLine1"
                     placeholder="123 Main Street"
                     value={formData.addressLine1}
-                    onChange={(e) => setFormData({ ...formData, addressLine1: e.target.value })}
+                    onChange={e => setFormData({ ...formData, addressLine1: e.target.value })}
                     required
                   />
                 </div>
@@ -151,7 +161,7 @@ const ClaimProperty = () => {
                     id="addressLine2"
                     placeholder="Apartment 4B"
                     value={formData.addressLine2}
-                    onChange={(e) => setFormData({ ...formData, addressLine2: e.target.value })}
+                    onChange={e => setFormData({ ...formData, addressLine2: e.target.value })}
                   />
                 </div>
                 <div className="space-y-2">
@@ -160,7 +170,7 @@ const ClaimProperty = () => {
                     id="city"
                     placeholder="London"
                     value={formData.city}
-                    onChange={(e) => setFormData({ ...formData, city: e.target.value })}
+                    onChange={e => setFormData({ ...formData, city: e.target.value })}
                     required
                   />
                 </div>
@@ -174,7 +184,7 @@ const ClaimProperty = () => {
                   <Label htmlFor="propertyType">Property Type *</Label>
                   <Select
                     value={formData.propertyType}
-                    onValueChange={(value) => setFormData({ ...formData, propertyType: value })}
+                    onValueChange={value => setFormData({ ...formData, propertyType: value })}
                   >
                     <SelectTrigger>
                       <SelectValue placeholder="Select type" />
@@ -198,7 +208,7 @@ const ClaimProperty = () => {
                     min="0"
                     placeholder="3"
                     value={formData.bedrooms}
-                    onChange={(e) => setFormData({ ...formData, bedrooms: e.target.value })}
+                    onChange={e => setFormData({ ...formData, bedrooms: e.target.value })}
                   />
                 </div>
                 <div className="space-y-2">
@@ -209,7 +219,7 @@ const ClaimProperty = () => {
                     min="0"
                     placeholder="2"
                     value={formData.bathrooms}
-                    onChange={(e) => setFormData({ ...formData, bathrooms: e.target.value })}
+                    onChange={e => setFormData({ ...formData, bathrooms: e.target.value })}
                   />
                 </div>
                 <div className="space-y-2">
@@ -220,7 +230,7 @@ const ClaimProperty = () => {
                     min="0"
                     placeholder="100"
                     value={formData.floorArea}
-                    onChange={(e) => setFormData({ ...formData, floorArea: e.target.value })}
+                    onChange={e => setFormData({ ...formData, floorArea: e.target.value })}
                   />
                 </div>
               </>
@@ -238,14 +248,14 @@ const ClaimProperty = () => {
                     max={new Date().getFullYear()}
                     placeholder="1990"
                     value={formData.yearBuilt}
-                    onChange={(e) => setFormData({ ...formData, yearBuilt: e.target.value })}
+                    onChange={e => setFormData({ ...formData, yearBuilt: e.target.value })}
                   />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="tenure">Tenure *</Label>
                   <Select
                     value={formData.tenure}
-                    onValueChange={(value) => setFormData({ ...formData, tenure: value })}
+                    onValueChange={value => setFormData({ ...formData, tenure: value })}
                   >
                     <SelectTrigger>
                       <SelectValue />
@@ -263,7 +273,7 @@ const ClaimProperty = () => {
                     id="titleNumber"
                     placeholder="AB123456"
                     value={formData.titleNumber}
-                    onChange={(e) => setFormData({ ...formData, titleNumber: e.target.value })}
+                    onChange={e => setFormData({ ...formData, titleNumber: e.target.value })}
                   />
                   <p className="text-xs text-muted-foreground">
                     Found on your title deeds (optional)
@@ -285,7 +295,8 @@ const ClaimProperty = () => {
                   onClick={nextStep}
                   className="ml-auto"
                   disabled={
-                    (step === 1 && (!formData.postcode || !formData.addressLine1 || !formData.city)) ||
+                    (step === 1 &&
+                      (!formData.postcode || !formData.addressLine1 || !formData.city)) ||
                     (step === 2 && !formData.propertyType)
                   }
                 >

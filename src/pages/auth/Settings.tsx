@@ -22,21 +22,23 @@ const Settings = () => {
   }, []);
 
   const checkAuth = async () => {
-    const { data: { user } } = await supabase.auth.getUser();
-    
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
     if (!user) {
       navigate("/login");
       return;
     }
 
     setUser(user);
-    
+
     const { data: profileData } = await supabase
       .from("profiles")
       .select("*")
       .eq("id", user.id)
       .single();
-    
+
     if (profileData) {
       setProfile(profileData);
       setFullName(profileData.full_name || "");
@@ -86,7 +88,7 @@ const Settings = () => {
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
-      
+
       <div className="container mx-auto px-4 py-8 max-w-2xl">
         <h1 className="text-3xl font-bold mb-8">Settings</h1>
 
@@ -99,16 +101,8 @@ const Settings = () => {
             <CardContent className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="email">Email</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  value={user.email}
-                  disabled
-                  className="bg-muted"
-                />
-                <p className="text-xs text-muted-foreground">
-                  Email cannot be changed
-                </p>
+                <Input id="email" type="email" value={user.email} disabled className="bg-muted" />
+                <p className="text-xs text-muted-foreground">Email cannot be changed</p>
               </div>
 
               <div className="space-y-2">
@@ -117,7 +111,7 @@ const Settings = () => {
                   id="fullName"
                   type="text"
                   value={fullName}
-                  onChange={(e) => setFullName(e.target.value)}
+                  onChange={e => setFullName(e.target.value)}
                 />
               </div>
 
@@ -127,7 +121,7 @@ const Settings = () => {
                   id="phone"
                   type="tel"
                   value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
+                  onChange={e => setPhone(e.target.value)}
                   placeholder="+44 7700 900000"
                 />
               </div>

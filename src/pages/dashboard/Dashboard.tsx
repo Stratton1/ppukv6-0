@@ -21,22 +21,24 @@ const Dashboard = () => {
   }, []);
 
   const checkAuth = async () => {
-    const { data: { user } } = await supabase.auth.getUser();
-    
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
     if (!user) {
       navigate("/login");
       return;
     }
 
     setUser(user);
-    
+
     // Fetch profile
     const { data: profileData } = await supabase
       .from("profiles")
       .select("*")
       .eq("id", user.id)
       .single();
-    
+
     setProfile(profileData);
 
     // Fetch user's properties
@@ -44,7 +46,7 @@ const Dashboard = () => {
       .from("properties")
       .select("*")
       .eq("claimed_by", user.id);
-    
+
     setProperties(propertiesData || []);
     setLoading(false);
   };
@@ -68,14 +70,12 @@ const Dashboard = () => {
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
-      
+
       <div className="container mx-auto px-4 py-8">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h1 className="text-3xl font-bold">
-              Welcome back, {profile?.full_name || "User"}
-            </h1>
+            <h1 className="text-3xl font-bold">Welcome back, {profile?.full_name || "User"}</h1>
             <p className="text-muted-foreground mt-1">
               Role: {profile?.role?.toUpperCase() || "USER"}
             </p>
@@ -88,7 +88,10 @@ const Dashboard = () => {
 
         {/* Quick Actions */}
         <div className="grid md:grid-cols-3 gap-6 mb-8">
-          <Card className="cursor-pointer hover:shadow-lg transition-shadow" onClick={() => navigate("/claim")}>
+          <Card
+            className="cursor-pointer hover:shadow-lg transition-shadow"
+            onClick={() => navigate("/claim")}
+          >
             <CardHeader>
               <CardTitle className="flex items-center">
                 <Plus className="mr-2 h-5 w-5" />
@@ -116,8 +119,12 @@ const Dashboard = () => {
             <CardContent>
               <div className="text-3xl font-bold text-secondary">
                 {properties.length > 0
-                  ? Math.round(properties.reduce((sum, p) => sum + (p.completion_percentage || 0), 0) / properties.length)
-                  : 0}%
+                  ? Math.round(
+                      properties.reduce((sum, p) => sum + (p.completion_percentage || 0), 0) /
+                        properties.length
+                    )
+                  : 0}
+                %
               </div>
             </CardContent>
           </Card>
@@ -142,7 +149,7 @@ const Dashboard = () => {
             </Card>
           ) : (
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {properties.map((property) => (
+              {properties.map(property => (
                 <PropertyCard
                   key={property.id}
                   id={property.id}

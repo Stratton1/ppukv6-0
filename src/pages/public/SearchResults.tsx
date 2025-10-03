@@ -23,11 +23,8 @@ const SearchResults = () => {
     try {
       setLoading(true);
       const query = searchParams.get("q") || "";
-      
-      let supabaseQuery = supabase
-        .from("properties")
-        .select("*")
-        .eq("is_public", true);
+
+      let supabaseQuery = supabase.from("properties").select("*").eq("is_public", true);
 
       if (query) {
         supabaseQuery = supabaseQuery.or(
@@ -59,7 +56,7 @@ const SearchResults = () => {
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
-      
+
       <div className="container mx-auto px-4 py-8">
         {/* Search Bar */}
         <form onSubmit={handleSearch} className="mb-8">
@@ -68,7 +65,7 @@ const SearchResults = () => {
               type="text"
               placeholder="Enter postcode, address, or area..."
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              onChange={e => setSearchQuery(e.target.value)}
               className="flex-1"
             />
             <Button type="submit">
@@ -99,13 +96,11 @@ const SearchResults = () => {
           ) : properties.length === 0 ? (
             <div className="text-center py-20">
               <p className="text-xl text-muted-foreground">No properties found</p>
-              <p className="text-sm text-muted-foreground mt-2">
-                Try adjusting your search terms
-              </p>
+              <p className="text-sm text-muted-foreground mt-2">Try adjusting your search terms</p>
             </div>
           ) : (
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {properties.map((property) => (
+              {properties.map(property => (
                 <PropertyCard
                   key={property.id}
                   id={property.id}

@@ -4,10 +4,10 @@
 
 PPUK uses two Supabase storage buckets:
 
-| Bucket Name | Public | Purpose | RLS Policy |
-|-------------|--------|---------|------------|
-| `property-documents` | ❌ Private | EPCs, deeds, surveys | Owner-only access |
-| `property-photos` | ✅ Public | Property images | Public read, owner write |
+| Bucket Name          | Public     | Purpose              | RLS Policy               |
+| -------------------- | ---------- | -------------------- | ------------------------ |
+| `property-documents` | ❌ Private | EPCs, deeds, surveys | Owner-only access        |
+| `property-photos`    | ✅ Public  | Property images      | Public read, owner write |
 
 ---
 
@@ -44,6 +44,7 @@ PPUK uses two Supabase storage buckets:
    - Verify file opens correctly
 
 ### Screenshot Example:
+
 ```
 [Backend UI]
 ├── Storage
@@ -88,16 +89,18 @@ PPUK uses two Supabase storage buckets:
 ### Example Policies:
 
 **property-documents (Private)**
+
 ```sql
 Policy: "Property owners can view their documents"
 Type: SELECT
 Check: auth.uid() IN (
-  SELECT claimed_by FROM properties 
+  SELECT claimed_by FROM properties
   WHERE id::text = (storage.foldername(name))[1]
 )
 ```
 
 **property-photos (Public)**
+
 ```sql
 Policy: "Anyone can view property photos"
 Type: SELECT
@@ -115,13 +118,13 @@ Open browser console on any PPUK page and run:
 ```javascript
 // List all files in property-documents
 const { data, error } = await supabase.storage
-  .from('property-documents')
-  .list('11111111-1111-1111-1111-111111111111');
+  .from("property-documents")
+  .list("11111111-1111-1111-1111-111111111111");
 
 if (error) {
-  console.error('Error:', error);
+  console.error("Error:", error);
 } else {
-  console.log('Files found:', data);
+  console.log("Files found:", data);
   data.forEach(file => {
     console.log(`- ${file.name} (${file.metadata.size} bytes)`);
   });
@@ -132,17 +135,15 @@ if (error) {
 
 ```javascript
 // Get signed URL for private document
-const { data, error } = await supabase.storage
-  .from('property-documents')
-  .createSignedUrl(
-    '11111111-1111-1111-1111-111111111111/1704990000.pdf',
-    3600 // expires in 1 hour
-  );
+const { data, error } = await supabase.storage.from("property-documents").createSignedUrl(
+  "11111111-1111-1111-1111-111111111111/1704990000.pdf",
+  3600 // expires in 1 hour
+);
 
 if (error) {
-  console.error('Error:', error);
+  console.error("Error:", error);
 } else {
-  console.log('Signed URL:', data.signedUrl);
+  console.log("Signed URL:", data.signedUrl);
   // Click URL to test download
 }
 ```
@@ -152,10 +153,10 @@ if (error) {
 ```javascript
 // For public photos bucket
 const { data } = supabase.storage
-  .from('property-photos')
-  .getPublicUrl('11111111-1111-1111-1111-111111111111/1704990456.jpg');
+  .from("property-photos")
+  .getPublicUrl("11111111-1111-1111-1111-111111111111/1704990456.jpg");
 
-console.log('Public URL:', data.publicUrl);
+console.log("Public URL:", data.publicUrl);
 ```
 
 ---
@@ -165,23 +166,27 @@ console.log('Public URL:', data.publicUrl);
 Use this checklist to verify storage is working:
 
 ### Pre-Upload Tests:
+
 - [ ] Both buckets exist in Storage UI
 - [ ] RLS policies are configured
 - [ ] Folder structure matches property UUIDs
 
 ### Upload Test:
+
 - [ ] Upload a test file via PPUK UI
 - [ ] File appears in correct bucket/folder
 - [ ] Database record created (documents/property_photos table)
 - [ ] File size matches original
 
 ### Download Test:
+
 - [ ] Generate signed URL for private file
 - [ ] URL downloads file successfully
 - [ ] Public photo URL loads in browser
 - [ ] URLs expire after configured time
 
 ### Security Test:
+
 - [ ] Non-owner cannot access private document URL
 - [ ] Logged-out user cannot list private files
 - [ ] Public photos accessible without auth
@@ -191,25 +196,30 @@ Use this checklist to verify storage is working:
 ## 🐛 Common Issues
 
 ### Issue: "Bucket not found"
+
 **Cause:** Migration didn't run or buckets deleted  
 **Fix:**
+
 ```sql
 -- Re-create buckets
-INSERT INTO storage.buckets (id, name, public) 
-VALUES 
+INSERT INTO storage.buckets (id, name, public)
+VALUES
   ('property-documents', 'property-documents', false),
   ('property-photos', 'property-photos', true);
 ```
 
 ### Issue: "Access denied" when viewing file
+
 **Cause:** RLS policy blocking access  
 **Fix:** Check user is logged in and is property owner
 
 ### Issue: "Signed URL expired"
+
 **Cause:** URL older than 1 hour  
 **Fix:** Generate new signed URL
 
 ### Issue: "File not found after upload"
+
 **Cause:** Upload didn't complete or wrong path  
 **Fix:** Check console logs, verify file path format
 
@@ -220,6 +230,7 @@ VALUES
 ### Check Usage:
 
 Via Supabase Dashboard:
+
 1. Project → Settings → Usage
 2. View storage usage graph
 3. Current usage / Quota
@@ -228,11 +239,9 @@ Via Supabase Dashboard:
 
 ```javascript
 // Time storage operations
-console.time('storage-upload');
-const { data, error } = await supabase.storage
-  .from('property-documents')
-  .upload('test.pdf', file);
-console.timeEnd('storage-upload');
+console.time("storage-upload");
+const { data, error } = await supabase.storage.from("property-documents").upload("test.pdf", file);
+console.timeEnd("storage-upload");
 ```
 
 ---
@@ -250,6 +259,7 @@ console.timeEnd('storage-upload');
 ## 📝 Next Steps
 
 After verifying storage:
+
 1. Test file upload flow end-to-end
 2. Check RLS policies prevent unauthorized access
 3. Verify file cleanup on property/document deletion
@@ -259,7 +269,8 @@ After verifying storage:
 ---
 
 **Last Updated:** 2025-01-10  
-**Related Docs:** 
+**Related Docs:**
+
 - `test-instructions.md` - Full testing guide
 - `../scripts/seed-dev-data.sql` - Test data
 - `../supabase/functions/*/` - Edge functions

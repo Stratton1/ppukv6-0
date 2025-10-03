@@ -23,6 +23,7 @@ To test the PPUK platform, you'll need to create test user accounts first. Here'
 ### Quick Test Login
 
 Once you've created these accounts, you can use the **Test Login** page (`/test-login`) for quick access:
+
 - Click the 🧪 Test Login button in the navbar
 - Select which test user to login as
 - Credentials are pre-filled for easy testing
@@ -30,6 +31,7 @@ Once you've created these accounts, you can use the **Test Login** page (`/test-
 ## Testing Workflows
 
 ### Owner Workflow:
+
 1. Login as Test Owner
 2. Go to Dashboard
 3. Claim a property via the "Claim Property" button
@@ -39,6 +41,7 @@ Once you've created these accounts, you can use the **Test Login** page (`/test-
 7. Check API preview data (simulated)
 
 ### Buyer Workflow:
+
 1. Login as Test Buyer
 2. Search for properties
 3. View property passports
@@ -47,6 +50,7 @@ Once you've created these accounts, you can use the **Test Login** page (`/test-
 ## Features to Test
 
 ### ✅ Implemented:
+
 - [x] User registration (Owner/Buyer roles)
 - [x] Property claiming with guided form
 - [x] Document upload system (PDF, DOCX, PNG, JPG)
@@ -57,6 +61,7 @@ Once you've created these accounts, you can use the **Test Login** page (`/test-
 - [x] Responsive design (mobile/desktop)
 
 ### 🚧 Coming Next:
+
 - [ ] AI document analysis
 - [ ] Real API integrations (via Cursor)
 - [ ] Property walkthrough wizard
@@ -65,16 +70,19 @@ Once you've created these accounts, you can use the **Test Login** page (`/test-
 - [ ] Cross-party messaging
 
 ## File Upload Limits
+
 - Documents: Max 10MB (PDF, DOCX, PNG, JPG)
 - Photos: Max 5MB (Images only)
 
 ## Storage Buckets
+
 - `property-documents` - Private documents (EPC, deeds, etc.)
 - `property-photos` - Public property photos
 
 ## Notes for Developers
 
 The platform uses:
+
 - **Lovable Cloud** (Supabase) for backend
 - **Row Level Security** for data protection
 - **Mock API data** for EPC, Flood Risk, HMLR, Planning (replace with real APIs in Cursor)

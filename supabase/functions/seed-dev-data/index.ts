@@ -6,7 +6,7 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-serve(async (req) => {
+serve(async req => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
@@ -49,7 +49,7 @@ serve(async (req) => {
 
     for (const testUser of testUsers) {
       const { data: existingUsers } = await supabaseAdmin.auth.admin.listUsers();
-      const userExists = existingUsers?.users.find((u) => u.email === testUser.email);
+      const userExists = existingUsers?.users.find(u => u.email === testUser.email);
 
       if (userExists) {
         userResults.push({
@@ -158,12 +158,9 @@ serve(async (req) => {
     );
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : "Unknown error";
-    return new Response(
-      JSON.stringify({ error: errorMessage }),
-      {
-        status: 500,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      }
-    );
+    return new Response(JSON.stringify({ error: errorMessage }), {
+      status: 500,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
   }
 });

@@ -11,6 +11,7 @@
 The Property Passport UK API provides secure, server-side access to external property data sources including EPC (Energy Performance Certificates), HMLR (HM Land Registry), and Flood Risk data. All API keys and sensitive operations are handled server-side to maintain security.
 
 ### Key Features
+
 - ✅ **Server-side API calls** - No secrets exposed to client
 - ✅ **Zod validation** - Runtime type safety for all inputs/outputs
 - ✅ **Rate limiting** - Prevents abuse and manages costs
@@ -30,8 +31,11 @@ Authorization: Bearer <your-supabase-jwt-token>
 ```
 
 ### Getting a Token
+
 ```javascript
-const { data: { session } } = await supabase.auth.getSession();
+const {
+  data: { session },
+} = await supabase.auth.getSession();
 const token = session?.access_token;
 ```
 
@@ -39,13 +43,14 @@ const token = session?.access_token;
 
 ## Rate Limits
 
-| Endpoint | Limit | Window | Notes |
-|----------|-------|--------|-------|
-| EPC API | 100 requests | 1 hour | Per IP address |
-| HMLR API | 50 requests | 1 hour | Per IP address |
+| Endpoint       | Limit        | Window | Notes          |
+| -------------- | ------------ | ------ | -------------- |
+| EPC API        | 100 requests | 1 hour | Per IP address |
+| HMLR API       | 50 requests  | 1 hour | Per IP address |
 | Flood Risk API | 200 requests | 1 hour | Per IP address |
 
 Rate limit headers are included in responses:
+
 ```http
 X-RateLimit-Limit: 100
 X-RateLimit-Remaining: 95
@@ -76,6 +81,7 @@ All endpoints return consistent error responses:
 ```
 
 ### Error Codes
+
 - `VALIDATION_ERROR` - Invalid input data
 - `NOT_FOUND` - Resource not found
 - `RATE_LIMIT_EXCEEDED` - Rate limit exceeded
@@ -94,6 +100,7 @@ All endpoints return consistent error responses:
 Fetches Energy Performance Certificate data from the UK EPC Register.
 
 #### Request
+
 ```json
 {
   "postcode": "SW1A 1AA",
@@ -103,6 +110,7 @@ Fetches Energy Performance Certificate data from the UK EPC Register.
 ```
 
 #### Response
+
 ```json
 {
   "success": true,
@@ -145,9 +153,11 @@ Fetches Energy Performance Certificate data from the UK EPC Register.
 ```
 
 #### Required Fields
+
 - `postcode` (string) - UK postcode in valid format
 
 #### Optional Fields
+
 - `address` (string) - Property address for disambiguation
 - `uprn` (string) - Unique Property Reference Number
 
@@ -160,6 +170,7 @@ Fetches Energy Performance Certificate data from the UK EPC Register.
 Fetches property title information and transaction history from HM Land Registry.
 
 #### Request
+
 ```json
 {
   "postcode": "SW1A 1AA",
@@ -169,6 +180,7 @@ Fetches property title information and transaction history from HM Land Registry
 ```
 
 #### Response
+
 ```json
 {
   "success": true,
@@ -215,9 +227,11 @@ Fetches property title information and transaction history from HM Land Registry
 ```
 
 #### Required Fields
+
 - `postcode` (string) - UK postcode in valid format
 
 #### Optional Fields
+
 - `address` (string) - Property address for disambiguation
 - `titleNumber` (string) - Land Registry title number
 
@@ -230,6 +244,7 @@ Fetches property title information and transaction history from HM Land Registry
 Fetches comprehensive flood risk data from the Environment Agency.
 
 #### Request
+
 ```json
 {
   "postcode": "SW1A 1AA",
@@ -239,6 +254,7 @@ Fetches comprehensive flood risk data from the Environment Agency.
 ```
 
 #### Response
+
 ```json
 {
   "success": true,
@@ -300,9 +316,11 @@ Fetches comprehensive flood risk data from the Environment Agency.
 ```
 
 #### Required Fields
+
 - `postcode` (string) - UK postcode in valid format
 
 #### Optional Fields
+
 - `address` (string) - Property address for disambiguation
 - `uprn` (string) - Unique Property Reference Number
 
@@ -315,13 +333,15 @@ Fetches comprehensive flood risk data from the Environment Agency.
 ```typescript
 // EPC API Example
 async function getEPCData(postcode: string, address?: string) {
-  const { data: { session } } = await supabase.auth.getSession();
-  
-  const response = await fetch('/functions/v1/api-epc', {
-    method: 'POST',
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
+
+  const response = await fetch("/functions/v1/api-epc", {
+    method: "POST",
     headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${session?.access_token}`,
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${session?.access_token}`,
     },
     body: JSON.stringify({
       postcode,
@@ -338,19 +358,19 @@ async function getEPCData(postcode: string, address?: string) {
 
 // Usage
 try {
-  const epcData = await getEPCData('SW1A 1AA', '123 Victoria Street, London');
-  console.log('EPC Rating:', epcData.data.currentRating);
-  console.log('Energy Efficiency:', epcData.data.currentEfficiency);
+  const epcData = await getEPCData("SW1A 1AA", "123 Victoria Street, London");
+  console.log("EPC Rating:", epcData.data.currentRating);
+  console.log("Energy Efficiency:", epcData.data.currentEfficiency);
 } catch (error) {
-  console.error('Failed to fetch EPC data:', error);
+  console.error("Failed to fetch EPC data:", error);
 }
 ```
 
 ### React Hook Example
 
 ```typescript
-import { useState, useEffect } from 'react';
-import { supabase } from './supabase';
+import { useState, useEffect } from "react";
+import { supabase } from "./supabase";
 
 export function useEPCData(postcode: string, address?: string) {
   const [data, setData] = useState(null);
@@ -365,13 +385,15 @@ export function useEPCData(postcode: string, address?: string) {
       setError(null);
 
       try {
-        const { data: { session } } = await supabase.auth.getSession();
-        
-        const response = await fetch('/functions/v1/api-epc', {
-          method: 'POST',
+        const {
+          data: { session },
+        } = await supabase.auth.getSession();
+
+        const response = await fetch("/functions/v1/api-epc", {
+          method: "POST",
           headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${session?.access_token}`,
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${session?.access_token}`,
           },
           body: JSON.stringify({ postcode, address }),
         });
@@ -402,13 +424,14 @@ export function useEPCData(postcode: string, address?: string) {
 
 All API responses are cached to improve performance and reduce external API calls:
 
-| API | Cache Duration | Cache Key Format |
-|-----|----------------|------------------|
-| EPC | 1 hour | `epc:postcode:{postcode}|address:{address}` |
-| HMLR | 2 hours | `hmlr:postcode:{postcode}|address:{address}` |
-| Flood Risk | 24 hours | `flood:postcode:{postcode}|address:{address}` |
+| API        | Cache Duration | Cache Key Format           |
+| ---------- | -------------- | -------------------------- | ------------------ |
+| EPC        | 1 hour         | `epc:postcode:{postcode}   | address:{address}` |
+| HMLR       | 2 hours        | `hmlr:postcode:{postcode}  | address:{address}` |
+| Flood Risk | 24 hours       | `flood:postcode:{postcode} | address:{address}` |
 
 Cache information is included in responses:
+
 ```json
 {
   "cache": {
@@ -449,11 +472,13 @@ FLOOD_API_BASE_URL=https://environment.data.gov.uk
 ### Local Development
 
 1. **Install Supabase CLI:**
+
    ```bash
    npm install -g supabase
    ```
 
 2. **Start local development:**
+
    ```bash
    supabase start
    ```
@@ -492,22 +517,26 @@ curl -X POST http://localhost:54321/functions/v1/api-flood \
 ## Security
 
 ### API Key Protection
+
 - All external API keys are stored server-side only
 - Client never has access to API keys
 - Keys are passed securely to external APIs
 
 ### Input Validation
+
 - All inputs validated with Zod schemas
 - Postcode format validation
 - SQL injection prevention
 - XSS protection
 
 ### Rate Limiting
+
 - Per-IP rate limiting
 - Prevents API abuse
 - Cost management for external APIs
 
 ### Error Handling
+
 - No sensitive information in error messages
 - Comprehensive logging for debugging
 - Graceful degradation on API failures
@@ -517,7 +546,9 @@ curl -X POST http://localhost:54321/functions/v1/api-flood \
 ## Monitoring
 
 ### Logging
+
 All API requests are logged with:
+
 - Request ID for tracing
 - User ID (if authenticated)
 - Property ID (if available)
@@ -526,6 +557,7 @@ All API requests are logged with:
 - Performance metrics
 
 ### Metrics
+
 - Request count per endpoint
 - Response times
 - Error rates
@@ -537,6 +569,7 @@ All API requests are logged with:
 ## Support
 
 For API support or questions:
+
 - Check the logs in Supabase Dashboard
 - Review error responses for specific issues
 - Ensure all required environment variables are set

@@ -7,11 +7,13 @@ The "All property creation attempts failed" error indicates that the database sc
 ## 🔧 Quick Fix Steps
 
 ### Step 1: Access Supabase Dashboard
+
 1. Go to your Supabase project dashboard
 2. Navigate to **SQL Editor** (left sidebar)
 3. Click **"New Query"**
 
 ### Step 2: Run Core Migration
+
 Copy and paste this SQL into the Supabase SQL Editor and run it:
 
 ```sql
@@ -205,7 +207,7 @@ CREATE TRIGGER on_auth_user_created AFTER INSERT ON auth.users FOR EACH ROW EXEC
 CREATE TRIGGER generate_ppuk_ref_trigger BEFORE INSERT ON properties FOR EACH ROW EXECUTE FUNCTION set_ppuk_reference();
 
 -- 11. Create storage buckets
-INSERT INTO storage.buckets (id, name, public) VALUES 
+INSERT INTO storage.buckets (id, name, public) VALUES
   ('property-photos', 'property-photos', true),
   ('property-documents', 'property-documents', false)
 ON CONFLICT (id) DO NOTHING;
@@ -213,30 +215,32 @@ ON CONFLICT (id) DO NOTHING;
 -- 12. Create storage policies
 CREATE POLICY "Anyone can view property photos" ON storage.objects FOR SELECT USING (bucket_id = 'property-photos');
 CREATE POLICY "Property owners can upload photos" ON storage.objects FOR INSERT WITH CHECK (
-  bucket_id = 'property-photos' AND 
+  bucket_id = 'property-photos' AND
   auth.uid()::text = (storage.foldername(name))[1]
 );
 CREATE POLICY "Property owners can delete their photos" ON storage.objects FOR DELETE USING (
-  bucket_id = 'property-photos' AND 
+  bucket_id = 'property-photos' AND
   auth.uid()::text = (storage.foldername(name))[1]
 );
 
 CREATE POLICY "Property owners can view their documents" ON storage.objects FOR SELECT USING (
-  bucket_id = 'property-documents' AND 
+  bucket_id = 'property-documents' AND
   auth.uid()::text = (storage.foldername(name))[1]
 );
 CREATE POLICY "Property owners can upload documents" ON storage.objects FOR INSERT WITH CHECK (
-  bucket_id = 'property-documents' AND 
+  bucket_id = 'property-documents' AND
   auth.uid()::text = (storage.foldername(name))[1]
 );
 CREATE POLICY "Property owners can delete their documents" ON storage.objects FOR DELETE USING (
-  bucket_id = 'property-documents' AND 
+  bucket_id = 'property-documents' AND
   auth.uid()::text = (storage.foldername(name))[1]
 );
 ```
 
 ### Step 3: Verify Setup
+
 After running the SQL, go back to your app and:
+
 1. Visit `http://localhost:8080/test-login`
 2. Click **"🗄️ Check Migrations"** - should show all tables exist
 3. Click **"🔍 Debug Schema"** - should show all columns work
@@ -262,6 +266,7 @@ If you're still getting errors, check:
 ## 🎯 Expected Result
 
 After running this SQL, the test-login should work perfectly and create:
+
 - Test users (owner@ppuk.test, buyer@ppuk.test)
 - Sample property with PPUK reference
 - Sample photo in media table

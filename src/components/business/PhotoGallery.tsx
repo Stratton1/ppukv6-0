@@ -58,7 +58,7 @@ const PhotoGallery = ({ propertyId, canUpload = false }: PhotoGalleryProps) => {
           .eq("property_id", propertyId)
           .ilike("mime_type", "image/%")
           .order("created_at", { ascending: false });
-        
+
         data = fallbackResult.data;
         error = fallbackResult.error;
       }
@@ -76,8 +76,8 @@ const PhotoGallery = ({ propertyId, canUpload = false }: PhotoGalleryProps) => {
     if (e.target.files && e.target.files[0]) {
       const selectedFile = e.target.files[0];
       const maxSize = 5 * 1024 * 1024; // 5MB
-      
-      if (!selectedFile.type.startsWith('image/')) {
+
+      if (!selectedFile.type.startsWith("image/")) {
         toast({
           title: "Invalid file",
           description: "Please select an image file",
@@ -104,34 +104,34 @@ const PhotoGallery = ({ propertyId, canUpload = false }: PhotoGalleryProps) => {
 
     setUploading(true);
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       if (!user) throw new Error("Not authenticated");
 
       // Upload to storage
-      const fileExt = file.name.split('.').pop();
+      const fileExt = file.name.split(".").pop();
       const fileName = `${propertyId}/${Date.now()}.${fileExt}`;
       const { error: uploadError } = await supabase.storage
-        .from('property-photos')
+        .from("property-photos")
         .upload(fileName, file);
 
       if (uploadError) throw uploadError;
 
       // Get public URL
-      const { data: { publicUrl } } = supabase.storage
-        .from('property-photos')
-        .getPublicUrl(fileName);
+      const {
+        data: { publicUrl },
+      } = supabase.storage.from("property-photos").getPublicUrl(fileName);
 
       // Save photo metadata
-      const { error: dbError } = await supabase
-        .from('media')
-        .insert({
-          property_id: propertyId,
-          type: 'photo',
-          url: publicUrl,
-          caption: caption || null,
-          room_type: roomType || null,
-          uploaded_by: user.id,
-        });
+      const { error: dbError } = await supabase.from("property_photos").insert({
+        property_id: propertyId,
+        file_name: file.name,
+        file_url: publicUrl,
+        caption: caption || null,
+        room_type: roomType || null,
+        uploaded_by: user.id,
+      });
 
       if (dbError) throw dbError;
 
@@ -181,13 +181,15 @@ const PhotoGallery = ({ propertyId, canUpload = false }: PhotoGalleryProps) => {
             <ImageIcon className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
             <p className="text-lg font-medium">No photos yet</p>
             <p className="text-muted-foreground">
-              {canUpload ? "Upload photos to showcase this property" : "Photos will appear here once uploaded"}
+              {canUpload
+                ? "Upload photos to showcase this property"
+                : "Photos will appear here once uploaded"}
             </p>
           </CardContent>
         </Card>
       ) : (
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-          {photos.map((photo) => (
+          {photos.map(photo => (
             <div
               key={photo.id}
               className="aspect-square rounded-lg overflow-hidden cursor-pointer hover:opacity-90 transition-opacity"
@@ -225,7 +227,7 @@ const PhotoGallery = ({ propertyId, canUpload = false }: PhotoGalleryProps) => {
               <Input
                 id="caption"
                 value={caption}
-                onChange={(e) => setCaption(e.target.value)}
+                onChange={e => setCaption(e.target.value)}
                 placeholder="e.g., Kitchen with island"
                 disabled={uploading}
               />
@@ -235,7 +237,7 @@ const PhotoGallery = ({ propertyId, canUpload = false }: PhotoGalleryProps) => {
               <Input
                 id="roomType"
                 value={roomType}
-                onChange={(e) => setRoomType(e.target.value)}
+                onChange={e => setRoomType(e.target.value)}
                 placeholder="e.g., Kitchen, Bedroom, Bathroom"
                 disabled={uploading}
               />

@@ -3,34 +3,34 @@
  * Displays comprehensive property data from EPC, HMLR, and Flood Risk APIs
  */
 
-import React, { useState } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Skeleton } from '@/components/ui/skeleton';
-import { 
-  usePropertyData, 
-  formatEPCRating, 
-  formatFloodRiskLevel, 
+import React, { useState } from "react";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Skeleton } from "@/components/ui/skeleton";
+import {
+  usePropertyData,
+  formatEPCRating,
+  formatFloodRiskLevel,
   getFloodRiskColor,
   formatCurrency,
-  formatDate
-} from '@/lib/apis/property-api';
-import type { PropertyIdentifier } from '@/types/api';
-import { 
-  Home, 
-  Zap, 
-  Shield, 
-  Droplets, 
-  Calendar, 
+  formatDate,
+} from "@/lib/apis/property-api";
+import type { PropertyIdentifier } from "@/types/api";
+import {
+  Home,
+  Zap,
+  Shield,
+  Droplets,
+  Calendar,
   PoundSterling,
   ExternalLink,
   AlertTriangle,
   CheckCircle,
-  XCircle
-} from 'lucide-react';
+  XCircle,
+} from "lucide-react";
 
 interface PropertyDataPanelProps {
   property: PropertyIdentifier;
@@ -39,7 +39,7 @@ interface PropertyDataPanelProps {
 
 export function PropertyDataPanel({ property, className }: PropertyDataPanelProps) {
   const { data, loading, error } = usePropertyData(property);
-  const [activeTab, setActiveTab] = useState('overview');
+  const [activeTab, setActiveTab] = useState("overview");
 
   if (loading) {
     return (
@@ -64,9 +64,7 @@ export function PropertyDataPanel({ property, className }: PropertyDataPanelProp
       <div className={className}>
         <Alert variant="destructive">
           <AlertTriangle className="h-4 w-4" />
-          <AlertDescription>
-            Failed to load property data: {error}
-          </AlertDescription>
+          <AlertDescription>Failed to load property data: {error}</AlertDescription>
         </Alert>
       </div>
     );
@@ -77,9 +75,7 @@ export function PropertyDataPanel({ property, className }: PropertyDataPanelProp
       <div className={className}>
         <Alert>
           <AlertTriangle className="h-4 w-4" />
-          <AlertDescription>
-            No property data available for this address.
-          </AlertDescription>
+          <AlertDescription>No property data available for this address.</AlertDescription>
         </Alert>
       </div>
     );
@@ -122,9 +118,7 @@ export function PropertyDataPanel({ property, className }: PropertyDataPanelProp
                 </CardHeader>
                 <CardContent>
                   <div className="text-2xl font-bold">{formatCurrency(hmlr.price)}</div>
-                  <p className="text-xs text-muted-foreground">
-                    {formatDate(hmlr.lastSold)}
-                  </p>
+                  <p className="text-xs text-muted-foreground">{formatDate(hmlr.lastSold)}</p>
                 </CardContent>
               </Card>
             )}
@@ -137,11 +131,11 @@ export function PropertyDataPanel({ property, className }: PropertyDataPanelProp
                 </CardHeader>
                 <CardContent>
                   <div className="flex items-center space-x-2">
-                    <Badge 
-                      variant="outline" 
-                      style={{ 
+                    <Badge
+                      variant="outline"
+                      style={{
                         borderColor: getFloodRiskColor(floodRisk.riskLevel),
-                        color: getFloodRiskColor(floodRisk.riskLevel)
+                        color: getFloodRiskColor(floodRisk.riskLevel),
                       }}
                     >
                       {floodRisk.riskLevel}
@@ -164,9 +158,7 @@ export function PropertyDataPanel({ property, className }: PropertyDataPanelProp
                   <Zap className="h-5 w-5" />
                   <span>Energy Performance Certificate</span>
                 </CardTitle>
-                <CardDescription>
-                  Last updated: {formatDate(epc.lastUpdated)}
-                </CardDescription>
+                <CardDescription>Last updated: {formatDate(epc.lastUpdated)}</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="grid gap-4 md:grid-cols-2">
@@ -192,7 +184,9 @@ export function PropertyDataPanel({ property, className }: PropertyDataPanelProp
                     <h4 className="font-medium mb-2">Environmental Impact</h4>
                     <div className="grid gap-2 text-sm">
                       <div>CO₂ Emissions: {epc.environmentalImpact.co2Emissions} kg/m²/year</div>
-                      <div>Energy Consumption: {epc.environmentalImpact.energyConsumption} kWh/m²/year</div>
+                      <div>
+                        Energy Consumption: {epc.environmentalImpact.energyConsumption} kWh/m²/year
+                      </div>
                       <div>Renewable Energy: {epc.environmentalImpact.renewableEnergy}%</div>
                     </div>
                   </div>
@@ -202,17 +196,18 @@ export function PropertyDataPanel({ property, className }: PropertyDataPanelProp
                   <div>
                     <h4 className="font-medium mb-2">Recommendations</h4>
                     <div className="space-y-2">
-                      {epc.recommendations.slice(0, 3).map((rec) => (
+                      {epc.recommendations.slice(0, 3).map(rec => (
                         <div key={rec.id} className="p-3 border rounded-lg">
                           <div className="flex items-center justify-between mb-1">
                             <span className="font-medium text-sm">{rec.title}</span>
-                            <Badge variant={rec.priority === 'High' ? 'destructive' : 'secondary'}>
+                            <Badge variant={rec.priority === "High" ? "destructive" : "secondary"}>
                               {rec.priority}
                             </Badge>
                           </div>
                           <p className="text-xs text-muted-foreground mb-2">{rec.description}</p>
                           <div className="text-xs text-muted-foreground">
-                            Cost: {formatCurrency(rec.cost)} • Savings: {formatCurrency(rec.savings)}/year
+                            Cost: {formatCurrency(rec.cost)} • Savings:{" "}
+                            {formatCurrency(rec.savings)}/year
                           </div>
                         </div>
                       ))}
@@ -233,9 +228,7 @@ export function PropertyDataPanel({ property, className }: PropertyDataPanelProp
           ) : (
             <Alert>
               <AlertTriangle className="h-4 w-4" />
-              <AlertDescription>
-                EPC data not available for this property.
-              </AlertDescription>
+              <AlertDescription>EPC data not available for this property.</AlertDescription>
             </Alert>
           )}
         </TabsContent>
@@ -248,9 +241,7 @@ export function PropertyDataPanel({ property, className }: PropertyDataPanelProp
                   <Shield className="h-5 w-5" />
                   <span>HM Land Registry</span>
                 </CardTitle>
-                <CardDescription>
-                  Title Number: {hmlr.titleNumber}
-                </CardDescription>
+                <CardDescription>Title Number: {hmlr.titleNumber}</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="grid gap-4 md:grid-cols-2">
@@ -300,9 +291,7 @@ export function PropertyDataPanel({ property, className }: PropertyDataPanelProp
           ) : (
             <Alert>
               <AlertTriangle className="h-4 w-4" />
-              <AlertDescription>
-                HMLR data not available for this property.
-              </AlertDescription>
+              <AlertDescription>HMLR data not available for this property.</AlertDescription>
             </Alert>
           )}
         </TabsContent>
@@ -315,18 +304,16 @@ export function PropertyDataPanel({ property, className }: PropertyDataPanelProp
                   <Droplets className="h-5 w-5" />
                   <span>Flood Risk Assessment</span>
                 </CardTitle>
-                <CardDescription>
-                  Last updated: {formatDate(floodRisk.lastUpdated)}
-                </CardDescription>
+                <CardDescription>Last updated: {formatDate(floodRisk.lastUpdated)}</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="flex items-center space-x-2">
-                  <Badge 
-                    variant="outline" 
+                  <Badge
+                    variant="outline"
                     className="text-lg px-3 py-1"
-                    style={{ 
+                    style={{
                       borderColor: getFloodRiskColor(floodRisk.riskLevel),
-                      color: getFloodRiskColor(floodRisk.riskLevel)
+                      color: getFloodRiskColor(floodRisk.riskLevel),
                     }}
                   >
                     {floodRisk.riskLevel}
@@ -344,11 +331,11 @@ export function PropertyDataPanel({ property, className }: PropertyDataPanelProp
                         <div key={index} className="p-3 border rounded-lg">
                           <div className="flex items-center justify-between mb-1">
                             <span className="font-medium text-sm">{factor.type}</span>
-                            <Badge 
+                            <Badge
                               variant="outline"
-                              style={{ 
+                              style={{
                                 borderColor: getFloodRiskColor(factor.riskLevel),
-                                color: getFloodRiskColor(factor.riskLevel)
+                                color: getFloodRiskColor(factor.riskLevel),
                               }}
                             >
                               {factor.riskLevel}
@@ -372,7 +359,9 @@ export function PropertyDataPanel({ property, className }: PropertyDataPanelProp
                         <div key={index} className="p-3 border rounded-lg">
                           <div className="flex items-center justify-between mb-1">
                             <span className="font-medium text-sm">{formatDate(flood.date)}</span>
-                            <Badge variant={flood.severity === 'Severe' ? 'destructive' : 'secondary'}>
+                            <Badge
+                              variant={flood.severity === "Severe" ? "destructive" : "secondary"}
+                            >
                               {flood.severity}
                             </Badge>
                           </div>
@@ -396,9 +385,7 @@ export function PropertyDataPanel({ property, className }: PropertyDataPanelProp
           ) : (
             <Alert>
               <AlertTriangle className="h-4 w-4" />
-              <AlertDescription>
-                Flood risk data not available for this property.
-              </AlertDescription>
+              <AlertDescription>Flood risk data not available for this property.</AlertDescription>
             </Alert>
           )}
         </TabsContent>

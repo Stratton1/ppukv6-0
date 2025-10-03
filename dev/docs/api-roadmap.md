@@ -9,6 +9,7 @@ This document outlines the roadmap for integrating external APIs to enhance Prop
 ## 🎯 Phase 1: Core Property Data (COMPLETED)
 
 ### ✅ EPC (Energy Performance Certificate) API
+
 - **Status**: Edge Function deployed
 - **Endpoint**: `/functions/v1/api-epc`
 - **Data**: Energy ratings, efficiency scores, recommendations
@@ -16,6 +17,7 @@ This document outlines the roadmap for integrating external APIs to enhance Prop
 - **Implementation**: Complete with mock data
 
 ### ✅ HMLR (HM Land Registry) API
+
 - **Status**: Edge Function deployed
 - **Endpoint**: `/functions/v1/api-hmlr`
 - **Data**: Title numbers, ownership, sale history, charges
@@ -23,6 +25,7 @@ This document outlines the roadmap for integrating external APIs to enhance Prop
 - **Implementation**: Complete with mock data
 
 ### ✅ Flood Risk API
+
 - **Status**: Edge Function deployed
 - **Endpoint**: `/functions/v1/api-flood`
 - **Data**: Flood risk levels, historical floods, mitigation
@@ -34,6 +37,7 @@ This document outlines the roadmap for integrating external APIs to enhance Prop
 ## 🚀 Phase 2: Enhanced Property Intelligence (IN PROGRESS)
 
 ### 1. Police UK Crime Statistics API
+
 - **Priority**: High
 - **Status**: Stub created
 - **Endpoint**: `/functions/v1/api-crime`
@@ -48,6 +52,7 @@ This document outlines the roadmap for integrating external APIs to enhance Prop
   - [ ] Add to PropertyDataPanel component
 
 ### 2. Google Maps / Street View API
+
 - **Priority**: High
 - **Status**: Stub created
 - **Endpoint**: `/functions/v1/api-streetview`
@@ -63,6 +68,7 @@ This document outlines the roadmap for integrating external APIs to enhance Prop
   - [ ] Add to PropertyDataPanel component
 
 ### 3. Ofsted Education API
+
 - **Priority**: High
 - **Status**: Stub created
 - **Endpoint**: `/functions/v1/api-education`
@@ -82,6 +88,7 @@ This document outlines the roadmap for integrating external APIs to enhance Prop
 ## 🌍 Phase 3: Environmental & Heritage Data
 
 ### 4. Environment Agency API
+
 - **Priority**: Medium
 - **Status**: Stub created
 - **Endpoint**: `/functions/v1/api-environmental`
@@ -97,6 +104,7 @@ This document outlines the roadmap for integrating external APIs to enhance Prop
   - [ ] Add to PropertyDataPanel component
 
 ### 5. Historic England API
+
 - **Priority**: Medium
 - **Status**: Stub created
 - **Endpoint**: `/functions/v1/api-heritage`
@@ -116,6 +124,7 @@ This document outlines the roadmap for integrating external APIs to enhance Prop
 ## 📊 Phase 4: Demographics & Infrastructure
 
 ### 6. ONS (Office for National Statistics) API
+
 - **Priority**: Medium
 - **Status**: Stub created
 - **Endpoint**: `/functions/v1/api-demographics`
@@ -131,6 +140,7 @@ This document outlines the roadmap for integrating external APIs to enhance Prop
   - [ ] Add to PropertyDataPanel component
 
 ### 7. Ordnance Survey API
+
 - **Priority**: Low
 - **Status**: Stub created
 - **Endpoint**: `/functions/v1/api-topographic`
@@ -150,6 +160,7 @@ This document outlines the roadmap for integrating external APIs to enhance Prop
 ## 🔧 Implementation Strategy
 
 ### Edge Function Architecture
+
 ```
 supabase/functions/
 ├── api-crime/
@@ -176,6 +187,7 @@ supabase/functions/
 ```
 
 ### Shared Components
+
 - **Validation**: Zod schemas for all API inputs/outputs
 - **Caching**: Redis-based caching with configurable TTL
 - **Rate Limiting**: Per-user and per-API rate limits
@@ -183,6 +195,7 @@ supabase/functions/
 - **Logging**: Comprehensive logging with correlation IDs
 
 ### Client Integration
+
 ```typescript
 // Usage in React components
 import { usePropertyData } from '../lib/apis/property-api';
@@ -191,7 +204,7 @@ import { useCrimeData, useEducationData } from '../lib/apis/external';
 function PropertyDataPanel({ property }) {
   const { data: crimeData } = useCrimeData(property);
   const { data: educationData } = useEducationData(property);
-  
+
   return (
     <div>
       <CrimeSection data={crimeData} />
@@ -206,6 +219,7 @@ function PropertyDataPanel({ property }) {
 ## 💰 Cost Analysis
 
 ### Free APIs (No Cost)
+
 - Police UK Crime Statistics
 - Ofsted Education Data
 - Environment Agency Data
@@ -215,10 +229,12 @@ function PropertyDataPanel({ property }) {
 - EPC Register
 
 ### Paid APIs (Budget Required)
+
 - **Google Maps Platform**: ~$50-100/month for 10,000 property views
 - **Ordnance Survey**: ~$200-500/month for detailed mapping data
 
 ### Total Estimated Monthly Cost
+
 - **Phase 1**: $0 (Free APIs only)
 - **Phase 2**: $50-100 (Google Maps integration)
 - **Phase 3**: $50-100 (No additional cost)
@@ -229,17 +245,20 @@ function PropertyDataPanel({ property }) {
 ## 🚦 Implementation Timeline
 
 ### Q1 2025: Phase 2 (High Priority)
+
 - **Week 1-2**: Police UK Crime API
 - **Week 3-4**: Google Maps/Street View API
 - **Week 5-6**: Ofsted Education API
 - **Week 7-8**: Integration and testing
 
 ### Q2 2025: Phase 3 (Medium Priority)
+
 - **Week 1-2**: Environment Agency API
 - **Week 3-4**: Historic England API
 - **Week 5-6**: Integration and testing
 
 ### Q3 2025: Phase 4 (Lower Priority)
+
 - **Week 1-2**: ONS Demographics API
 - **Week 3-4**: Ordnance Survey API
 - **Week 5-6**: Integration and testing
@@ -249,18 +268,21 @@ function PropertyDataPanel({ property }) {
 ## 🔒 Security Considerations
 
 ### API Key Management
+
 - All API keys stored as Supabase secrets
 - Never exposed to client-side code
 - Rotated regularly (quarterly)
 - Monitored for usage and abuse
 
 ### Rate Limiting
+
 - Per-user limits: 100 requests/hour
 - Per-API limits: Based on provider limits
 - Circuit breakers for failing APIs
 - Graceful degradation when limits exceeded
 
 ### Data Privacy
+
 - No PII stored in external API calls
 - Postcode-only queries where possible
 - Data anonymization for analytics
@@ -271,18 +293,21 @@ function PropertyDataPanel({ property }) {
 ## 📈 Success Metrics
 
 ### Technical Metrics
+
 - API response time < 2 seconds
 - 99.9% uptime for Edge Functions
 - < 1% error rate
 - Cache hit rate > 80%
 
 ### Business Metrics
+
 - Property completion score improvement
 - User engagement increase
 - Time spent on property pages
 - User satisfaction scores
 
 ### Cost Metrics
+
 - API cost per property view
 - Cost per user acquisition
 - ROI on paid API integrations
@@ -292,6 +317,7 @@ function PropertyDataPanel({ property }) {
 ## 🛠️ Development Guidelines
 
 ### Code Standards
+
 - TypeScript strict mode
 - Zod validation for all inputs
 - Comprehensive error handling
@@ -299,12 +325,14 @@ function PropertyDataPanel({ property }) {
 - Integration tests for API calls
 
 ### Documentation
+
 - API documentation for each endpoint
 - Integration guides for developers
 - Troubleshooting guides
 - Performance optimization guides
 
 ### Monitoring
+
 - Real-time API health monitoring
 - Performance dashboards
 - Error tracking and alerting
@@ -315,12 +343,14 @@ function PropertyDataPanel({ property }) {
 ## 🔄 Future Enhancements
 
 ### Advanced Features
+
 - AI-powered property insights
 - Predictive analytics for property values
 - Market trend analysis
 - Investment opportunity scoring
 
 ### Additional APIs
+
 - Planning permission data
 - Local authority information
 - Transport for London (TfL) data
@@ -328,6 +358,7 @@ function PropertyDataPanel({ property }) {
 - Energy efficiency recommendations
 
 ### Integration Opportunities
+
 - Property listing platforms
 - Estate agent systems
 - Mortgage provider APIs

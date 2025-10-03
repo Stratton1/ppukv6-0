@@ -5,6 +5,7 @@ Thank you for your interest in contributing to Property Passport UK! This guide 
 ## 🚀 Quick Start
 
 ### Prerequisites
+
 - Node.js 20.x or later
 - npm or yarn package manager
 - Git
@@ -13,23 +14,27 @@ Thank you for your interest in contributing to Property Passport UK! This guide 
 ### Development Setup
 
 1. **Clone the repository**
+
    ```bash
    git clone https://github.com/your-org/ppukv6-0.git
    cd ppukv6-0
    ```
 
 2. **Install dependencies**
+
    ```bash
    npm install
    ```
 
 3. **Set up environment variables**
+
    ```bash
    cp .env.example .env
    # Edit .env with your Supabase credentials
    ```
 
 4. **Start development server**
+
    ```bash
    npm run dev
    ```
@@ -42,30 +47,33 @@ Thank you for your interest in contributing to Property Passport UK! This guide 
 
 ### Available Scripts
 
-| Script | Description |
-|--------|-------------|
-| `npm run dev` | Start development server |
-| `npm run build` | Build for production |
-| `npm run preview` | Preview production build |
-| `npm run typecheck` | Run TypeScript type checking |
-| `npm run lint` | Run ESLint |
-| `npm run format` | Format code with Prettier |
-| `npm run format:check` | Check code formatting |
+| Script                 | Description                  |
+| ---------------------- | ---------------------------- |
+| `npm run dev`          | Start development server     |
+| `npm run build`        | Build for production         |
+| `npm run preview`      | Preview production build     |
+| `npm run typecheck`    | Run TypeScript type checking |
+| `npm run lint`         | Run ESLint                   |
+| `npm run format`       | Format code with Prettier    |
+| `npm run format:check` | Check code formatting        |
 
 ### Code Quality Standards
 
 #### TypeScript
+
 - Use strict TypeScript configuration
 - Avoid `any` types when possible
 - Use proper type definitions for all functions and components
 - Run `npm run typecheck` before committing
 
 #### Code Formatting
+
 - Use Prettier for consistent formatting
 - Run `npm run format` before committing
 - Follow the configured style (semi-colons, double quotes, 100 char width)
 
 #### ESLint
+
 - Follow ESLint rules for code quality
 - Run `npm run lint` to check for issues
 - Fix warnings and errors before committing
@@ -75,6 +83,7 @@ Thank you for your interest in contributing to Property Passport UK! This guide 
 We use [Conventional Commits](https://www.conventionalcommits.org/) for consistent commit messages.
 
 ### Commit Message Format
+
 ```
 <type>(<scope>): <description>
 
@@ -84,6 +93,7 @@ We use [Conventional Commits](https://www.conventionalcommits.org/) for consiste
 ```
 
 ### Types
+
 - `feat`: New feature
 - `fix`: Bug fix
 - `docs`: Documentation changes
@@ -94,6 +104,7 @@ We use [Conventional Commits](https://www.conventionalcommits.org/) for consiste
 - `ci`: CI/CD changes
 
 ### Examples
+
 ```bash
 feat(auth): add user registration flow
 fix(ui): resolve button alignment issue
@@ -107,6 +118,7 @@ ci(workflow): add typecheck to CI pipeline
 Our GitHub Actions workflow runs on every push and pull request to `main` and `develop` branches.
 
 ### Pipeline Steps
+
 1. **Checkout code** - Get the latest code
 2. **Setup Node.js 20.x** - Install Node.js with caching
 3. **Install dependencies** - `npm ci` for clean install
@@ -118,6 +130,7 @@ Our GitHub Actions workflow runs on every push and pull request to `main` and `d
 ### Fixing CI Failures
 
 #### TypeScript Errors
+
 ```bash
 npm run typecheck
 # Fix any TypeScript errors
@@ -126,6 +139,7 @@ npm run typecheck
 ```
 
 #### ESLint Errors
+
 ```bash
 npm run lint
 # Fix linting issues
@@ -134,6 +148,7 @@ npm run lint -- --fix
 ```
 
 #### Formatting Issues
+
 ```bash
 npm run format:check
 # Check formatting issues
@@ -142,6 +157,7 @@ npm run format
 ```
 
 #### Build Failures
+
 ```bash
 npm run build
 # Check for build errors
@@ -174,12 +190,14 @@ src/
 ## 🧪 Testing
 
 ### Manual Testing
+
 - Use `/test-login` page for development testing
 - Test both owner and buyer user flows
 - Verify property passport functionality
 - Check file upload/download features
 
 ### Database Testing
+
 - Ensure Supabase migrations are applied
 - Test RLS policies
 - Verify storage bucket configurations
@@ -189,21 +207,25 @@ src/
 ### Common Issues
 
 #### "Module not found" errors
+
 - Check import paths use `@/` alias
 - Verify file extensions (.ts, .tsx)
 - Ensure proper export/import syntax
 
 #### TypeScript errors
+
 - Run `npm run typecheck` to see all errors
 - Check for missing type definitions
 - Verify Supabase schema types
 
 #### Build failures
+
 - Clear node_modules and reinstall: `rm -rf node_modules && npm install`
 - Check for circular dependencies
 - Verify all imports are correct
 
 ### Development Tools
+
 - Browser DevTools for debugging
 - Supabase Dashboard for database inspection
 - Network tab for API debugging
@@ -219,6 +241,7 @@ src/
 ## 🤝 Pull Request Process
 
 1. **Create feature branch**
+
    ```bash
    git checkout -b feature/your-feature-name
    ```
@@ -229,6 +252,7 @@ src/
    - Update documentation
 
 3. **Test locally**
+
    ```bash
    npm run typecheck
    npm run lint
@@ -237,12 +261,14 @@ src/
    ```
 
 4. **Commit changes**
+
    ```bash
    git add .
    git commit -m "feat(scope): your commit message"
    ```
 
 5. **Push and create PR**
+
    ```bash
    git push origin feature/your-feature-name
    # Create PR on GitHub
@@ -263,12 +289,14 @@ src/
 ## 🎯 Development Priorities
 
 ### Current Focus
+
 1. **Database Migration** - Complete Supabase schema setup
 2. **Type Safety** - Resolve remaining TypeScript errors
 3. **API Integration** - Connect real external APIs
 4. **Testing** - Comprehensive test coverage
 
 ### Future Enhancements
+
 1. **AI Document Analysis** - Automated data extraction
 2. **Performance Optimization** - Image optimization, caching
 3. **Enhanced Features** - Advanced property management

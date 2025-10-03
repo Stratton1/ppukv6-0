@@ -37,11 +37,7 @@ const PropertyCard = ({
       <Card className="overflow-hidden hover:shadow-lg transition-shadow cursor-pointer">
         <div className="aspect-[4/3] bg-muted relative">
           {frontPhotoUrl ? (
-            <img
-              src={frontPhotoUrl}
-              alt={address}
-              className="w-full h-full object-cover"
-            />
+            <img src={frontPhotoUrl} alt={address} className="w-full h-full object-cover" />
           ) : (
             <div className="w-full h-full flex items-center justify-center">
               <Home className="h-20 w-20 text-muted-foreground" />
@@ -60,11 +56,13 @@ const PropertyCard = ({
                 <h3 className="font-semibold text-lg line-clamp-1">{address}</h3>
                 <div className="flex items-center text-sm text-muted-foreground mt-1">
                   <MapPin className="h-3 w-3 mr-1" />
-                  <span>{city}, {postcode}</span>
+                  <span>
+                    {city}, {postcode}
+                  </span>
                 </div>
               </div>
             </div>
-            
+
             <div className="flex items-center space-x-4 text-sm text-muted-foreground">
               {bedrooms && (
                 <div className="flex items-center">

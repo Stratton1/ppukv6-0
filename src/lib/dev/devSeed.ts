@@ -1,4 +1,4 @@
-import { supabase } from '@/integrations/supabase/client';
+import { supabase } from "@/integrations/supabase/client";
 
 export interface DevSeedResult {
   success: boolean;
@@ -9,7 +9,7 @@ export interface DevSeedResult {
 
 export interface UserProfile {
   full_name: string;
-  role: 'owner' | 'buyer';
+  role: "owner" | "buyer";
 }
 
 // Helper types and functions
@@ -34,8 +34,13 @@ function mentions(err: any, ...needles: string[]) {
 const isFK = (err: any) => err?.code === "23503"; // foreign key
 const isUnique = (err: any) => err?.code === "23505"; // unique
 
-async function whichProfileKey(supabase: typeof import('@/integrations/supabase/client').supabase): Promise<"user_id"|"id"> {
-  const a = await supabase.from("profiles").select("user_id", { head: true, count: "exact" }).limit(0);
+async function whichProfileKey(
+  supabase: typeof import("@/integrations/supabase/client").supabase
+): Promise<"user_id" | "id"> {
+  const a = await supabase
+    .from("profiles")
+    .select("user_id", { head: true, count: "exact" })
+    .limit(0);
   if (!a.error) return "user_id";
   const b = await supabase.from("profiles").select("id", { head: true, count: "exact" }).limit(0);
   if (!b.error) return "id";
@@ -48,12 +53,24 @@ function normalizeCaseMatch(allowed: string[], candidate?: string | null) {
   return hit;
 }
 
-function getAllowedEnumValue(enumName: string, candidate?: string | null, fallbacks: string[] = []) {
+function getAllowedEnumValue(
+  enumName: string,
+  candidate?: string | null,
+  fallbacks: string[] = []
+) {
   // Hardcode safe lists for dev
-  const MAP: Record<string,string[]> = {
-    user_role: ["OWNER","BUYER","AGENT","ADMIN"],
-    property_type: ["DETACHED_HOUSE","SEMI_DETACHED_HOUSE","FLAT","MAISONETTE","BUNGALOW","COTTAGE","OTHER"],
-    tenure_type: ["FREEHOLD","LEASEHOLD","COMMONHOLD","SHARE_OF_FREEHOLD","OTHER"]
+  const MAP: Record<string, string[]> = {
+    user_role: ["OWNER", "BUYER", "AGENT", "ADMIN"],
+    property_type: [
+      "DETACHED_HOUSE",
+      "SEMI_DETACHED_HOUSE",
+      "FLAT",
+      "MAISONETTE",
+      "BUNGALOW",
+      "COTTAGE",
+      "OTHER",
+    ],
+    tenure_type: ["FREEHOLD", "LEASEHOLD", "COMMONHOLD", "SHARE_OF_FREEHOLD", "OTHER"],
   };
   const list = MAP[enumName] ?? [];
   const norm = normalizeCaseMatch(list, candidate);
@@ -64,9 +81,12 @@ function getAllowedEnumValue(enumName: string, candidate?: string | null, fallba
 /**
  * Ensure a profile row exists for the user - minimal, schema-aware version
  */
-export async function ensureProfile(supabase: typeof import('@/integrations/supabase/client').supabase, user: any) {
+export async function ensureProfile(
+  supabase: typeof import("@/integrations/supabase/client").supabase,
+  user: any
+) {
   console.log("ensureProfile(): start", user?.id);
-  
+
   // Detect which key to use (user_id vs id)
   const key = await whichProfileKey(supabase);
   const keyEq = key === "user_id" ? { user_id: user.id } : { id: user.id };
@@ -80,22 +100,28 @@ export async function ensureProfile(supabase: typeof import('@/integrations/supa
 
   // Build minimal payload with only safe columns
   const base: any = { ...keyEq };
-  
+
   // Try to add full_name if column exists
   try {
-    const probe = await supabase.from("profiles").select("full_name", { head: true, count: "exact" }).limit(0);
+    const probe = await supabase
+      .from("profiles")
+      .select("full_name", { head: true, count: "exact" })
+      .limit(0);
     if (!probe.error) {
       base.full_name = "Dev User";
     }
   } catch (e) {
     console.log("ensureProfile(): full_name column not available");
   }
-  
+
   // Try to add role if column exists
   try {
-    const roleProbe = await supabase.from("profiles").select("role", { head: true, count: "exact" }).limit(0);
+    const roleProbe = await supabase
+      .from("profiles")
+      .select("role", { head: true, count: "exact" })
+      .limit(0);
     if (!roleProbe.error) {
-      const safeRole = getAllowedEnumValue(["owner", "buyer", "other"], "owner");
+      const safeRole = getAllowedEnumValue("role", "owner", ["owner", "buyer", "other"]);
       if (safeRole) base.role = safeRole;
     }
   } catch (e) {
@@ -103,13 +129,17 @@ export async function ensureProfile(supabase: typeof import('@/integrations/supa
   }
 
   console.log("ensureProfile(): attempting upsert with", Object.keys(base));
-  const result = await supabase.from("profiles").upsert(base, { onConflict: key }).select().single();
-  
+  const result = await supabase
+    .from("profiles")
+    .upsert(base, { onConflict: key })
+    .select()
+    .single();
+
   if (result.error) {
     console.error("ensureProfile(): upsert failed", result.error);
     throw new Error(`Profile creation failed: ${result.error.message}`);
   }
-  
+
   console.log("ensureProfile(): success", result.data?.id);
   return result.data;
 }
@@ -119,10 +149,10 @@ export async function ensureProfile(supabase: typeof import('@/integrations/supa
  */
 export async function probeHasTypeColumn(): Promise<boolean> {
   try {
-    const { error } = await supabase.from('media').select('type').limit(0);
+    const { error } = await supabase.from("media").select("type").limit(0);
     return !error;
   } catch (error) {
-    console.log('Type column probe failed:', error);
+    console.log("Type column probe failed:", error);
     return false;
   }
 }
@@ -132,36 +162,32 @@ export async function probeHasTypeColumn(): Promise<boolean> {
  */
 export async function checkDatabaseMigrations(): Promise<DevSeedResult> {
   try {
-    console.log('🔍 Checking database migrations...');
-    
+    console.log("🔍 Checking database migrations...");
+
     // Check if key tables exist
     const tableChecks = [
-      { name: 'profiles', query: 'profiles' },
-      { name: 'properties', query: 'properties' },
-      { name: 'documents', query: 'documents' },
-      { name: 'media', query: 'media' },
-      { name: 'storage buckets', query: 'storage.buckets' }
+      { name: "profiles", table: "profiles" as const },
+      { name: "properties", table: "properties" as const },
+      { name: "documents", table: "documents" as const },
+      { name: "property_photos", table: "property_photos" as const },
     ];
 
     const results: any = {};
-    
+
     for (const check of tableChecks) {
       try {
-        const { data, error } = await supabase
-          .from(check.query)
-          .select('*')
-          .limit(0);
+        const { data, error } = await supabase.from(check.table).select("*").limit(0);
 
         results[check.name] = {
           exists: !error,
-          error: error?.message || null
+          error: error?.message || null,
         };
-        
-        console.log(`${check.name}: ${error ? '❌' : '✅'} ${error?.message || 'Exists'}`);
+
+        console.log(`${check.name}: ${error ? "❌" : "✅"} ${error?.message || "Exists"}`);
       } catch (err: any) {
         results[check.name] = {
           exists: false,
-          error: err.message
+          error: err.message,
         };
         console.log(`${check.name}: ❌ Exception: ${err.message}`);
       }
@@ -173,14 +199,14 @@ export async function checkDatabaseMigrations(): Promise<DevSeedResult> {
 
     return {
       success: existingTables.length > 0,
-      message: `Migration check complete. Existing tables: ${existingTables.join(', ')}`,
-      data: { results, existingTables }
+      message: `Migration check complete. Existing tables: ${existingTables.join(", ")}`,
+      data: { results, existingTables },
     };
   } catch (error: any) {
     return {
       success: false,
       message: `Migration check failed: ${error.message}`,
-      error: error.message
+      error: error.message,
     };
   }
 }
@@ -190,36 +216,39 @@ export async function checkDatabaseMigrations(): Promise<DevSeedResult> {
  */
 export async function debugPropertiesSchema(): Promise<DevSeedResult> {
   try {
-    console.log('🔍 Debugging properties table schema...');
-    
+    console.log("🔍 Debugging properties table schema...");
+
     // Test different column combinations to see what works
     const columnTests = [
-      { name: 'Basic fields', columns: 'id, address_line_1, city, postcode' },
-      { name: 'With property_type', columns: 'id, address_line_1, city, postcode, property_type' },
-      { name: 'With tenure', columns: 'id, address_line_1, city, postcode, property_type, tenure' },
-      { name: 'With claimed_by', columns: 'id, address_line_1, city, postcode, property_type, claimed_by' },
-      { name: 'All core fields', columns: 'id, address_line_1, city, postcode, property_type, tenure, claimed_by' }
+      { name: "Basic fields", columns: "id, address_line_1, city, postcode" },
+      { name: "With property_type", columns: "id, address_line_1, city, postcode, property_type" },
+      { name: "With tenure", columns: "id, address_line_1, city, postcode, property_type, tenure" },
+      {
+        name: "With claimed_by",
+        columns: "id, address_line_1, city, postcode, property_type, claimed_by",
+      },
+      {
+        name: "All core fields",
+        columns: "id, address_line_1, city, postcode, property_type, tenure, claimed_by",
+      },
     ];
 
     const results: any = {};
-    
+
     for (const test of columnTests) {
       try {
-        const { data, error } = await supabase
-          .from('properties')
-          .select(test.columns)
-          .limit(0);
+        const { data, error } = await supabase.from("properties").select(test.columns).limit(0);
 
         results[test.name] = {
           success: !error,
-          error: error?.message || null
+          error: error?.message || null,
         };
-        
-        console.log(`${test.name}: ${error ? '❌' : '✅'} ${error?.message || 'OK'}`);
+
+        console.log(`${test.name}: ${error ? "❌" : "✅"} ${error?.message || "OK"}`);
       } catch (err: any) {
         results[test.name] = {
           success: false,
-          error: err.message
+          error: err.message,
         };
         console.log(`${test.name}: ❌ Exception: ${err.message}`);
       }
@@ -231,14 +260,14 @@ export async function debugPropertiesSchema(): Promise<DevSeedResult> {
 
     return {
       success: workingColumns.length > 0,
-      message: `Schema debug complete. Working combinations: ${workingColumns.join(', ')}`,
-      data: { results, workingColumns }
+      message: `Schema debug complete. Working combinations: ${workingColumns.join(", ")}`,
+      data: { results, workingColumns },
     };
   } catch (error: any) {
     return {
       success: false,
       message: `Schema debug failed: ${error.message}`,
-      error: error.message
+      error: error.message,
     };
   }
 }
@@ -247,101 +276,100 @@ export async function debugPropertiesSchema(): Promise<DevSeedResult> {
  * Ensure a user exists and is logged in
  */
 export async function ensureUser(
-  email: string, 
-  password: string, 
+  email: string,
+  password: string,
   profile: UserProfile
 ): Promise<DevSeedResult> {
   try {
     console.log(`Ensuring user: ${email}`);
-    
+
     // First try to sign in
     const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
       email,
-      password
+      password,
     });
 
     if (signInData.user && !signInError) {
       console.log(`User ${email} signed in successfully`);
-      
+
       // Ensure profile exists after login
-      await ensureProfile(supabase, { 
-        id: signInData.user.id, 
-        email: signInData.user.email, 
-        user_metadata: signInData.user.user_metadata 
+      await ensureProfile(supabase, {
+        id: signInData.user.id,
+        email: signInData.user.email,
+        user_metadata: signInData.user.user_metadata,
       });
-      
+
       return {
         success: true,
         message: `Signed in as ${email}`,
-        data: { user: signInData.user, session: signInData.session }
+        data: { user: signInData.user, session: signInData.session },
       };
     }
 
     // If sign in failed with "Invalid login credentials", try to sign up
-    if (signInError?.message?.includes('Invalid login credentials')) {
+    if (signInError?.message?.includes("Invalid login credentials")) {
       console.log(`User ${email} not found, creating new user`);
-      
+
       const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
         email,
         password,
         options: {
           data: {
             full_name: profile.full_name,
-            role: profile.role
-          }
-        }
+            role: profile.role,
+          },
+        },
       });
 
       if (signUpError) {
         return {
           success: false,
           message: `Failed to create user: ${signUpError.message}`,
-          error: signUpError.message
+          error: signUpError.message,
         };
       }
 
       // After sign up, try to sign in again (works when email confirmation is disabled)
       const { data: signInData2, error: signInError2 } = await supabase.auth.signInWithPassword({
         email,
-        password
+        password,
       });
 
       if (signInError2 || !signInData2.user) {
         return {
           success: false,
           message: `Failed to sign in after creation: ${signInError2?.message}`,
-          error: signInError2?.message
+          error: signInError2?.message,
         };
       }
 
       // Ensure profile exists after sign-up
-      await ensureProfile(supabase, { 
-        id: signInData2.user.id, 
-        email: signInData2.user.email, 
-        user_metadata: signInData2.user.user_metadata 
+      await ensureProfile(supabase, {
+        id: signInData2.user.id,
+        email: signInData2.user.email,
+        user_metadata: signInData2.user.user_metadata,
       });
 
       console.log(`User ${email} created and signed in successfully`);
-      
+
       return {
         success: true,
         message: `Created and signed in as ${email}`,
-        data: { user: signInData2.user, session: signInData2.session }
+        data: { user: signInData2.user, session: signInData2.session },
       };
     }
 
     return {
       success: false,
       message: `Sign in failed: ${signInError?.message}`,
-      error: signInError?.message
+      error: signInError?.message,
     };
-
   } catch (error: any) {
-    console.error('ensureUser error:', error);
+    console.error("ensureUser error:", error);
     return {
       success: false,
       message: `Unexpected error: ${error.message}`,
-      error: error.message
+      error: error.message,
     };
   }
 }
@@ -349,40 +377,49 @@ export async function ensureUser(
 /**
  * Ensure the current user has a property - robust with profile guarantee
  */
-export async function ensureOwnerProperty(supabase: typeof import('@/integrations/supabase/client').supabase, user: any): Promise<DevSeedResult> {
+export async function ensureOwnerProperty(
+  supabase: typeof import("@/integrations/supabase/client").supabase,
+  user: any
+): Promise<DevSeedResult> {
   console.log("ensureOwnerProperty(): start");
   await ensureProfile(supabase, user);
 
   // Do we already have a property?
-  const mine = await supabase.from("properties").select("id").eq("claimed_by", user.id).limit(1).maybeSingle();
+  const mine = await supabase
+    .from("properties")
+    .select("id")
+    .eq("claimed_by", user.id)
+    .limit(1)
+    .maybeSingle();
   if (mine.data?.id) {
     console.log("ensureOwnerProperty(): already have property", mine.data.id);
     return {
       success: true,
       message: `Property already exists`,
-      data: { propertyId: mine.data.id }
+      data: { propertyId: mine.data.id },
     };
   }
 
   // Try RPC first
   try {
     console.log("ensureOwnerProperty(): trying RPC ppuk_create_property_min");
-    const { data: rpcData, error: rpcError } = await supabase.rpc('ppuk_create_property_min', { 
-      owner_id: user.id 
-    });
-    
+    const { data: rpcData, error: rpcError } = await supabase.rpc("generate_ppuk_reference");
+
     if (!rpcError && rpcData) {
       console.log("ensureOwnerProperty(): RPC success", rpcData);
       return {
         success: true,
         message: `Property created via RPC`,
-        data: { propertyId: rpcData }
+        data: { propertyId: rpcData },
       };
     }
-    
+
     // If RPC not found (error 42883) or RLS blocked, fallback to client insert
-    if (rpcError && (rpcError.code === '42883' || rpcError.message.includes('permission denied'))) {
-      console.log("ensureOwnerProperty(): RPC failed, falling back to client insert", rpcError.message);
+    if (rpcError && (rpcError.code === "42883" || rpcError.message.includes("permission denied"))) {
+      console.log(
+        "ensureOwnerProperty(): RPC failed, falling back to client insert",
+        rpcError.message
+      );
     } else {
       console.log("ensureOwnerProperty(): RPC failed with unexpected error", rpcError);
     }
@@ -392,38 +429,40 @@ export async function ensureOwnerProperty(supabase: typeof import('@/integration
 
   // Fallback to minimal client insert
   console.log("ensureOwnerProperty(): trying minimal client insert");
-  
+
   // Try with minimal columns first
   const minimalPayload = {
     claimed_by: user.id,
     address_line_1: "1 Demo Street",
     city: "London",
-    postcode: "EC1A 1AA"
+    postcode: "EC1A 1AA",
+    property_type: "other" as const,
+    tenure: "freehold" as const,
   };
 
   let ins = await supabase.from("properties").insert(minimalPayload).select("id").single();
-  
+
   // If FK error on profiles, re-run ensureProfile() and retry once
-  if (ins.error && ins.error.code === '23503') {
+  if (ins.error && ins.error.code === "23503") {
     console.log("ensureOwnerProperty(): FK error, re-ensuring profile and retrying");
     await ensureProfile(supabase, user);
     ins = await supabase.from("properties").insert(minimalPayload).select("id").single();
   }
-  
+
   if (ins.error) {
     console.error("ensureOwnerProperty(): client insert failed", ins.error);
     return {
       success: false,
       message: `Property creation failed: ${ins.error.message}`,
       error: ins.error.message,
-      data: ins.error
+      data: ins.error,
     };
   }
-  
+
   return {
     success: true,
     message: `Property created via client insert`,
-    data: { propertyId: ins.data.id }
+    data: { propertyId: ins.data.id },
   };
 }
 
@@ -432,48 +471,50 @@ export async function ensureOwnerProperty(supabase: typeof import('@/integration
  */
 export async function seedSamplePhoto(propertyId: string): Promise<DevSeedResult> {
   try {
-    const { data: { user } } = await supabase.auth.getUser();
-    
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
     if (!user) {
       return {
         success: false,
-        message: 'No authenticated user',
-        error: 'Not logged in'
+        message: "No authenticated user",
+        error: "Not logged in",
       };
     }
 
     console.log(`Seeding sample photo for property: ${propertyId}`);
 
     // Fetch the test photo
-    const response = await fetch('/test-files/test-photo.jpg');
+    const response = await fetch("/test-files/test-photo.jpg");
     if (!response.ok) {
       return {
         success: false,
-        message: 'Failed to fetch test photo',
-        error: 'Test photo not found'
+        message: "Failed to fetch test photo",
+        error: "Test photo not found",
       };
     }
 
     const blob = await response.blob();
-    const file = new File([blob], 'test-photo.jpg', { type: 'image/jpeg' });
+    const file = new File([blob], "test-photo.jpg", { type: "image/jpeg" });
 
     // Upload to storage
     const fileName = `${Date.now()}-test-photo.jpg`;
     const { data: uploadData, error: uploadError } = await supabase.storage
-      .from('property-photos')
+      .from("property-photos")
       .upload(`${propertyId}/${fileName}`, file);
 
     if (uploadError) {
       return {
         success: false,
         message: `Failed to upload photo: ${uploadError.message}`,
-        error: uploadError.message
+        error: uploadError.message,
       };
     }
 
     // Get public URL
     const { data: urlData } = supabase.storage
-      .from('property-photos')
+      .from("property-photos")
       .getPublicUrl(uploadData.path);
 
     // Check if type column exists
@@ -483,43 +524,42 @@ export async function seedSamplePhoto(propertyId: string): Promise<DevSeedResult
     const mediaData: any = {
       property_id: propertyId,
       url: urlData.publicUrl,
-      mime_type: 'image/jpeg',
+      mime_type: "image/jpeg",
       file_name: fileName,
-      uploaded_by: user.id
+      uploaded_by: user.id,
     };
 
     // Only add optional fields if they exist
     if (hasTypeColumn) {
-      mediaData.type = 'photo';
+      mediaData.type = "photo";
     }
 
     const { data: mediaInsert, error: mediaError } = await supabase
-      .from('media')
+      .from("property_photos")
       .insert(mediaData)
-      .select('id')
+      .select("id")
       .single();
 
     if (mediaError) {
       return {
         success: false,
         message: `Failed to insert media record: ${mediaError.message}`,
-        error: mediaError.message
+        error: mediaError.message,
       };
     }
 
     console.log(`Seeded sample photo: ${mediaInsert.id}`);
     return {
       success: true,
-      message: 'Sample photo seeded successfully',
-      data: { mediaId: mediaInsert.id, url: urlData.publicUrl }
+      message: "Sample photo seeded successfully",
+      data: { mediaId: mediaInsert.id, url: urlData.publicUrl },
     };
-
   } catch (error: any) {
-    console.error('seedSamplePhoto error:', error);
+    console.error("seedSamplePhoto error:", error);
     return {
       success: false,
       message: `Unexpected error: ${error.message}`,
-      error: error.message
+      error: error.message,
     };
   }
 }
@@ -529,79 +569,82 @@ export async function seedSamplePhoto(propertyId: string): Promise<DevSeedResult
  */
 export async function seedSampleDocument(propertyId: string): Promise<DevSeedResult> {
   try {
-    const { data: { user } } = await supabase.auth.getUser();
-    
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
     if (!user) {
       return {
         success: false,
-        message: 'No authenticated user',
-        error: 'Not logged in'
+        message: "No authenticated user",
+        error: "Not logged in",
       };
     }
 
     console.log(`Seeding sample document for property: ${propertyId}`);
 
     // Fetch the test document
-    const response = await fetch('/test-files/test-doc.pdf');
+    const response = await fetch("/test-files/test-doc.pdf");
     if (!response.ok) {
       return {
         success: false,
-        message: 'Failed to fetch test document',
-        error: 'Test document not found'
+        message: "Failed to fetch test document",
+        error: "Test document not found",
       };
     }
 
     const blob = await response.blob();
-    const file = new File([blob], 'test-doc.pdf', { type: 'application/pdf' });
+    const file = new File([blob], "test-doc.pdf", { type: "application/pdf" });
 
     // Upload to storage
     const fileName = `${Date.now()}-test-doc.pdf`;
     const { data: uploadData, error: uploadError } = await supabase.storage
-      .from('property-documents')
+      .from("property-documents")
       .upload(`${propertyId}/${fileName}`, file);
 
     if (uploadError) {
       return {
         success: false,
         message: `Failed to upload document: ${uploadError.message}`,
-        error: uploadError.message
+        error: uploadError.message,
       };
     }
 
     // Insert into documents table with minimal safe fields (avoid enums)
     const { data: docInsert, error: docError } = await supabase
-      .from('documents')
+      .from("documents")
       .insert({
         property_id: propertyId,
         file_name: fileName,
         file_size_bytes: file.size,
-        mime_type: 'application/pdf',
-        uploaded_by: user.id
+        mime_type: "application/pdf",
+        uploaded_by: user.id,
+        document_type: "other",
+        file_url: "placeholder-url",
       })
-      .select('id')
+      .select("id")
       .single();
 
     if (docError) {
       return {
         success: false,
         message: `Failed to insert document record: ${docError.message}`,
-        error: docError.message
+        error: docError.message,
       };
     }
 
     console.log(`Seeded sample document: ${docInsert.id}`);
     return {
       success: true,
-      message: 'Sample document seeded successfully',
-      data: { documentId: docInsert.id }
+      message: "Sample document seeded successfully",
+      data: { documentId: docInsert.id },
     };
-
   } catch (error: any) {
-    console.error('seedSampleDocument error:', error);
+    console.error("seedSampleDocument error:", error);
     return {
       success: false,
       message: `Unexpected error: ${error.message}`,
-      error: error.message
+      error: error.message,
     };
   }
 }
@@ -611,24 +654,26 @@ export async function seedSampleDocument(propertyId: string): Promise<DevSeedRes
  */
 export async function oneClickDevSetup(): Promise<DevSeedResult> {
   try {
-    console.log('Starting one-click dev setup...');
-    
+    console.log("Starting one-click dev setup...");
+
     // 1. Ensure owner user
-    const userResult = await ensureUser('owner@ppuk.test', 'password123', {
-      full_name: 'Test Owner',
-      role: 'owner'
+    const userResult = await ensureUser("owner@ppuk.test", "password123", {
+      full_name: "Test Owner",
+      role: "owner",
     });
 
     if (!userResult.success) {
       return userResult;
     }
 
-    const { data: { user } } = await supabase.auth.getUser();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
     if (!user) {
       return {
         success: false,
-        message: 'No authenticated user after login',
-        error: 'Authentication failed'
+        message: "No authenticated user after login",
+        error: "Authentication failed",
       };
     }
 
@@ -645,32 +690,31 @@ export async function oneClickDevSetup(): Promise<DevSeedResult> {
     // 4. Seed sample photo
     const photoResult = await seedSamplePhoto(propertyId);
     if (!photoResult.success) {
-      console.warn('Photo seeding failed:', photoResult.message);
+      console.warn("Photo seeding failed:", photoResult.message);
     }
 
     // 5. Seed sample document
     const docResult = await seedSampleDocument(propertyId);
     if (!docResult.success) {
-      console.warn('Document seeding failed:', docResult.message);
+      console.warn("Document seeding failed:", docResult.message);
     }
 
-    console.log('One-click dev setup completed successfully');
+    console.log("One-click dev setup completed successfully");
     return {
       success: true,
       message: `Dev setup complete! Property: ${propertyId}`,
       data: {
         propertyId,
         photoId: photoResult.data?.mediaId,
-        documentId: docResult.data?.documentId
-      }
+        documentId: docResult.data?.documentId,
+      },
     };
-
   } catch (error: any) {
-    console.error('oneClickDevSetup error:', error);
+    console.error("oneClickDevSetup error:", error);
     return {
       success: false,
       message: `Unexpected error: ${error.message}`,
-      error: error.message
+      error: error.message,
     };
   }
 }

@@ -3,22 +3,27 @@
  * Provides runtime validation for all API inputs and outputs
  */
 
-import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
+import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
 
 // Base schemas
 export const PropertyIdentifierSchema = z.object({
-  postcode: z.string().min(1).max(10).regex(/^[A-Z]{1,2}[0-9][A-Z0-9]?\s?[0-9][A-Z]{2}$/i, 'Invalid UK postcode format'),
+  postcode: z
+    .string()
+    .min(1)
+    .max(10)
+    .regex(/^[A-Z]{1,2}[0-9][A-Z0-9]?\s?[0-9][A-Z]{2}$/i, "Invalid UK postcode format"),
   address: z.string().optional(),
   uprn: z.string().optional(),
 });
 
-export const ApiResponseSchema = <T extends z.ZodType>(dataSchema: T) => z.object({
-  success: z.boolean(),
-  data: dataSchema.optional(),
-  error: z.string().optional(),
-  timestamp: z.string().datetime(),
-  requestId: z.string().uuid(),
-});
+export const ApiResponseSchema = <T extends z.ZodType>(dataSchema: T) =>
+  z.object({
+    success: z.boolean(),
+    data: dataSchema.optional(),
+    error: z.string().optional(),
+    timestamp: z.string().datetime(),
+    requestId: z.string().uuid(),
+  });
 
 // EPC validation schemas
 export const EPCDataSchema = z.object({
@@ -28,9 +33,9 @@ export const EPCDataSchema = z.object({
   propertyType: z.string(),
   builtForm: z.string(),
   totalFloorArea: z.number().positive(),
-  currentRating: z.enum(['A', 'B', 'C', 'D', 'E', 'F', 'G']),
+  currentRating: z.enum(["A", "B", "C", "D", "E", "F", "G"]),
   currentEfficiency: z.number().min(0).max(100),
-  environmentalImpactRating: z.enum(['A', 'B', 'C', 'D', 'E', 'F', 'G']),
+  environmentalImpactRating: z.enum(["A", "B", "C", "D", "E", "F", "G"]),
   environmentalImpactEfficiency: z.number().min(0).max(100),
   mainFuelType: z.string(),
   mainHeatingDescription: z.string(),
@@ -149,7 +154,7 @@ export const HMLRDataSchema = z.object({
   titleNumber: z.string(),
   address: z.string(),
   postcode: z.string(),
-  tenure: z.enum(['Freehold', 'Leasehold', 'Commonhold']),
+  tenure: z.enum(["Freehold", "Leasehold", "Commonhold"]),
   pricePaid: z.number().positive().optional(),
   pricePaidDate: z.string().datetime().optional(),
   propertyType: z.string(),
@@ -171,7 +176,7 @@ export const HMLRDataSchema = z.object({
 
 // Flood Risk validation schemas
 export const FloodRiskLevelSchema = z.object({
-  level: z.enum(['Very Low', 'Low', 'Medium', 'High', 'Very High']),
+  level: z.enum(["Very Low", "Low", "Medium", "High", "Very High"]),
   score: z.number().min(0).max(10),
   description: z.string(),
   probability: z.string(),
@@ -181,8 +186,8 @@ export const FloodRiskLevelSchema = z.object({
 
 export const FloodWarningSchema = z.object({
   id: z.string(),
-  type: z.enum(['Flood Alert', 'Flood Warning', 'Severe Flood Warning']),
-  severity: z.enum(['Low', 'Medium', 'High', 'Severe']),
+  type: z.enum(["Flood Alert", "Flood Warning", "Severe Flood Warning"]),
+  severity: z.enum(["Low", "Medium", "High", "Severe"]),
   message: z.string(),
   issuedDate: z.string().datetime(),
   validUntil: z.string().datetime().optional(),
@@ -192,8 +197,8 @@ export const FloodWarningSchema = z.object({
 
 export const HistoricalFloodSchema = z.object({
   date: z.string().datetime(),
-  type: z.enum(['Surface Water', 'River', 'Coastal', 'Groundwater']),
-  severity: z.enum(['Minor', 'Moderate', 'Major']),
+  type: z.enum(["Surface Water", "River", "Coastal", "Groundwater"]),
+  severity: z.enum(["Minor", "Moderate", "Major"]),
   description: z.string(),
   affectedAreas: z.array(z.string()),
   damageEstimate: z.number().positive().optional(),
@@ -209,7 +214,7 @@ export const FloodRiskDataSchema = z.object({
     groundwater: FloodRiskLevelSchema,
     reservoirs: FloodRiskLevelSchema,
   }),
-  riskLevel: z.enum(['Very Low', 'Low', 'Medium', 'High', 'Very High']),
+  riskLevel: z.enum(["Very Low", "Low", "Medium", "High", "Very High"]),
   riskScore: z.number().min(0).max(10),
   lastUpdated: z.string().datetime(),
   dataSource: z.string(),
@@ -231,7 +236,7 @@ export const PlanningApplicationSchema = z.object({
   reference: z.string(),
   address: z.string(),
   description: z.string(),
-  status: z.enum(['Approved', 'Refused', 'Pending', 'Withdrawn']),
+  status: z.enum(["Approved", "Refused", "Pending", "Withdrawn"]),
   applicationDate: z.string().datetime(),
   decisionDate: z.string().datetime().optional(),
   applicant: z.string(),
@@ -249,10 +254,19 @@ export const PlanningApplicationSchema = z.object({
 });
 
 export const PlanningConstraintSchema = z.object({
-  type: z.enum(['Conservation Area', 'Listed Building', 'Tree Preservation Order', 'Article 4 Direction', 'Green Belt', 'AONB', 'SSSI', 'Flood Zone']),
+  type: z.enum([
+    "Conservation Area",
+    "Listed Building",
+    "Tree Preservation Order",
+    "Article 4 Direction",
+    "Green Belt",
+    "AONB",
+    "SSSI",
+    "Flood Zone",
+  ]),
   name: z.string(),
   description: z.string(),
-  status: z.enum(['Active', 'Proposed', 'Expired']),
+  status: z.enum(["Active", "Proposed", "Expired"]),
   date: z.string().datetime(),
   authority: z.string(),
   reference: z.string().optional(),
@@ -338,7 +352,9 @@ export function validateRequest<T>(schema: z.ZodSchema<T>, data: unknown): T {
     return schema.parse(data);
   } catch (error) {
     if (error instanceof z.ZodError) {
-      throw new Error(`Validation error: ${error.errors.map(e => `${e.path.join('.')}: ${e.message}`).join(', ')}`);
+      throw new Error(
+        `Validation error: ${error.errors.map(e => `${e.path.join(".")}: ${e.message}`).join(", ")}`
+      );
     }
     throw error;
   }
@@ -349,7 +365,9 @@ export function validateResponse<T>(schema: z.ZodSchema<T>, data: unknown): T {
     return schema.parse(data);
   } catch (error) {
     if (error instanceof z.ZodError) {
-      throw new Error(`Response validation error: ${error.errors.map(e => `${e.path.join('.')}: ${e.message}`).join(', ')}`);
+      throw new Error(
+        `Response validation error: ${error.errors.map(e => `${e.path.join(".")}: ${e.message}`).join(", ")}`
+      );
     }
     throw error;
   }
@@ -370,58 +388,70 @@ export const CrimeDataSchema = z.object({
   lastUpdated: z.string(),
   crimeStats: z.object({
     totalCrimes: z.number(),
-    crimesByCategory: z.array(z.object({
-      category: z.string(),
-      count: z.number(),
-      percentage: z.number(),
-      trend: z.enum(['up', 'down', 'stable'])
-    })),
-    crimesByMonth: z.array(z.object({
-      month: z.string(),
-      count: z.number(),
-      categories: z.record(z.number())
-    })),
-    crimeRate: z.number()
+    crimesByCategory: z.array(
+      z.object({
+        category: z.string(),
+        count: z.number(),
+        percentage: z.number(),
+        trend: z.enum(["up", "down", "stable"]),
+      })
+    ),
+    crimesByMonth: z.array(
+      z.object({
+        month: z.string(),
+        count: z.number(),
+        categories: z.record(z.number()),
+      })
+    ),
+    crimeRate: z.number(),
   }),
-  safetyRating: z.enum(['Very Safe', 'Safe', 'Moderate', 'Concerning', 'High Risk']),
+  safetyRating: z.enum(["Very Safe", "Safe", "Moderate", "Concerning", "High Risk"]),
   comparison: z.object({
     nationalAverage: z.number(),
     localAuthorityAverage: z.number(),
-    percentile: z.number()
-  })
+    percentile: z.number(),
+  }),
 });
 
 export const EducationDataSchema = z.object({
   address: z.string(),
   postcode: z.string(),
   lastUpdated: z.string(),
-  schools: z.array(z.object({
-    name: z.string(),
-    type: z.enum(['Primary', 'Secondary', 'Special', 'Independent']),
-    phase: z.enum(['Primary', 'Secondary', 'All-through']),
-    ofstedRating: z.enum(['Outstanding', 'Good', 'Requires improvement', 'Inadequate', 'Not yet inspected']),
-    distance: z.number(),
-    address: z.string(),
-    postcode: z.string(),
-    capacity: z.number(),
-    pupils: z.number(),
-    lastInspection: z.string(),
-    nextInspection: z.string().optional(),
-    website: z.string().optional(),
-    phone: z.string().optional()
-  })),
+  schools: z.array(
+    z.object({
+      name: z.string(),
+      type: z.enum(["Primary", "Secondary", "Special", "Independent"]),
+      phase: z.enum(["Primary", "Secondary", "All-through"]),
+      ofstedRating: z.enum([
+        "Outstanding",
+        "Good",
+        "Requires improvement",
+        "Inadequate",
+        "Not yet inspected",
+      ]),
+      distance: z.number(),
+      address: z.string(),
+      postcode: z.string(),
+      capacity: z.number(),
+      pupils: z.number(),
+      lastInspection: z.string(),
+      nextInspection: z.string().optional(),
+      website: z.string().optional(),
+      phone: z.string().optional(),
+    })
+  ),
   educationSummary: z.object({
     totalSchools: z.number(),
     outstandingSchools: z.number(),
     goodSchools: z.number(),
     requiresImprovement: z.number(),
     inadequateSchools: z.number(),
-    averageRating: z.number()
+    averageRating: z.number(),
   }),
   catchmentAreas: z.object({
     primary: z.array(z.string()),
-    secondary: z.array(z.string())
-  })
+    secondary: z.array(z.string()),
+  }),
 });
 
 // Type exports for use in other files

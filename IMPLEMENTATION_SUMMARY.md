@@ -3,11 +3,14 @@
 ## ✅ Completed Features
 
 ### 1. 📄 Document Upload System
+
 **Files Created:**
+
 - `src/components/DocumentUploader.tsx` - Full-featured document uploader
 - Storage buckets configured: `property-documents` (private)
 
 **Features:**
+
 - Drag-drop file upload (PDF, DOCX, PNG, JPG)
 - Document type categorization (EPC, Floorplan, Title Deed, Survey, etc.)
 - 10MB file size limit
@@ -20,12 +23,15 @@
 ---
 
 ### 2. 📸 Property Photo Gallery
+
 **Files Created:**
+
 - `src/components/PhotoGallery.tsx` - Responsive photo gallery with lightbox
 - `property_photos` database table for metadata
 - Storage bucket: `property-photos` (public)
 
 **Features:**
+
 - Grid layout (2/3/4 columns responsive)
 - Upload with captions and room types
 - 5MB image size limit
@@ -37,17 +43,21 @@
 ---
 
 ### 3. 🌍 External API Placeholders
+
 **Files Created:**
+
 - `src/lib/apis/mockData.ts` - Mock data for all APIs
 - `src/components/APIPreviewCard.tsx` - Reusable API preview component
 
 **Mock APIs Implemented:**
+
 - **EPC Data:** Rating, score, recommendations, expiry
 - **Flood Risk:** Surface water, rivers/sea, groundwater, reservoirs
 - **HMLR:** Title number, tenure, price history
 - **Planning:** Recent applications, constraints
 
 **Features:**
+
 - Professional card layouts
 - Color-coded risk levels
 - "Simulated Data" badges
@@ -58,10 +68,13 @@
 ---
 
 ### 4. ✅ Passport Completeness Scoring
+
 **Files Created:**
+
 - `src/components/PassportScore.tsx` - Dynamic completeness tracker
 
 **Scoring Based On:**
+
 1. Address details ✓
 2. Property type & style ✓
 3. Bedrooms & bathrooms ✓
@@ -74,6 +87,7 @@
 10. Interior photos (3+) ✓
 
 **Features:**
+
 - Visual progress bar
 - Checkbox list of requirements
 - Percentage calculation
@@ -84,11 +98,14 @@
 ---
 
 ### 5. 🧪 Test User System
+
 **Files Created:**
+
 - `src/pages/TestLogin.tsx` - Quick login page for testing
 - `README_TESTING.md` - Complete testing guide
 
 **Test Accounts:**
+
 - **Owner:** `owner@ppuk.test` / `password123`
 - **Buyer:** `buyer@ppuk.test` / `password123`
 
@@ -99,6 +116,7 @@
 ## 🏗️ Database Schema Updates
 
 ### New Tables:
+
 1. **property_photos**
    - id, property_id, file_url, file_name
    - caption, room_type, is_featured
@@ -106,6 +124,7 @@
    - RLS: Public read, owner-only write
 
 ### Storage Buckets:
+
 1. **property-documents** (Private)
    - RLS: Owners can view/upload/delete their property docs
 2. **property-photos** (Public)
@@ -116,6 +135,7 @@
 ## 🎨 Design System
 
 **Colors:**
+
 - Primary: Navy Blue (#0D1B2A - HSL 215 45% 30%)
 - Secondary: Sage Green (#A3B18A - HSL 145 25% 60%)
 - Background: Clean white/dark navy
@@ -128,6 +148,7 @@
 ## 📐 Architecture Patterns
 
 ### Component Structure:
+
 ```
 /pages
   - Home.tsx (landing)
@@ -150,6 +171,7 @@
 ```
 
 ### Security:
+
 - All uploads protected by RLS
 - Owner-only document access
 - Public property photos (for listings)
@@ -160,25 +182,30 @@
 ## 🚀 Next Steps (For Cursor Integration)
 
 ### Priority 1: Real API Integration
+
 Replace mock data in `/lib/apis/mockData.ts` with:
+
 - EPC Register API
 - Environment Agency Flood API
 - HMLR API
 - Planning Data API
 
 ### Priority 2: AI Document Analysis
+
 - Integrate Lovable AI (Gemini 2.5 Flash)
 - Auto-extract data from uploaded EPCs
 - Summarize planning documents
 - Populate property fields automatically
 
 ### Priority 3: Guided Walkthrough
+
 - Create `/pages/Walkthrough.tsx`
 - Step-by-step property onboarding
 - Room-by-room photo capture
 - Progress saving between sessions
 
 ### Priority 4: Enhanced Features
+
 - Buyer saved properties
 - Cross-party messaging
 - Property comparison tool
@@ -189,6 +216,7 @@ Replace mock data in `/lib/apis/mockData.ts` with:
 ## 📱 Mobile Optimization
 
 All components are fully responsive:
+
 - Grid layouts collapse to 1-2 columns
 - Mobile nav with hamburger menu
 - Touch-friendly upload zones
@@ -199,6 +227,7 @@ All components are fully responsive:
 ## 🧪 Testing Checklist
 
 ### Owner Flow:
+
 - [ ] Register as owner
 - [ ] Claim a property
 - [ ] Upload EPC document
@@ -207,6 +236,7 @@ All components are fully responsive:
 - [ ] Check API data previews
 
 ### Buyer Flow:
+
 - [ ] Register as buyer
 - [ ] Search properties
 - [ ] View property passports
@@ -214,6 +244,7 @@ All components are fully responsive:
 - [ ] Browse photo galleries
 
 ### Technical:
+
 - [ ] File upload size limits work
 - [ ] RLS blocks unauthorized access
 - [ ] Photos display in gallery

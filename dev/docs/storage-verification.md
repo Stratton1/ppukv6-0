@@ -5,10 +5,12 @@ This document provides SQL queries and instructions for verifying that the Prope
 ## Overview
 
 The PPUK platform uses two Supabase storage buckets:
+
 - **property-photos** (public) - For property photos that can be viewed by anyone
 - **property-documents** (private) - For sensitive documents that require signed URLs
 
 Data is stored in two database tables:
+
 - **media** - For photos and other media (type='photo')
 - **documents** - For property documents with metadata
 
@@ -24,6 +26,7 @@ ORDER BY created_at;
 ```
 
 **Expected Result:**
+
 - `property-photos` should exist with `public = true`
 - `property-documents` should exist with `public = false`
 
@@ -38,6 +41,7 @@ LIMIT 10;
 ```
 
 **Expected Result:**
+
 - Should show recent photo uploads
 - `type` should be 'photo'
 - `url` should contain public URLs to property-photos bucket
@@ -52,6 +56,7 @@ LIMIT 10;
 ```
 
 **Expected Result:**
+
 - Should show recent document uploads
 - `file_name` should contain original filenames
 - `file_size_bytes` should show file sizes
@@ -66,6 +71,7 @@ ORDER BY tablename, policyname;
 ```
 
 **Expected Result:**
+
 - Should show RLS policies for both tables
 - Policies should allow property owners to manage their data
 - Public read access for media on public properties
@@ -73,6 +79,7 @@ ORDER BY tablename, policyname;
 ## Manual Testing Steps
 
 ### 1. Test Photo Upload
+
 1. Navigate to `/debug/storage`
 2. Click "Upload Test Photo"
 3. Verify success message
@@ -80,6 +87,7 @@ ORDER BY tablename, policyname;
 5. Verify the image is publicly accessible
 
 ### 2. Test Document Upload
+
 1. Navigate to `/debug/storage`
 2. Click "Upload Test Document"
 3. Verify success message
@@ -87,6 +95,7 @@ ORDER BY tablename, policyname;
 5. Click "Test Signed URL" to verify private access
 
 ### 3. Test Property Passport Integration
+
 1. Login as a property owner
 2. Navigate to a property passport
 3. Upload a real photo via the Photos tab
@@ -99,19 +108,23 @@ ORDER BY tablename, policyname;
 ### Common Issues
 
 **"Media table not found"**
+
 - Run the media table migration: `supabase/migrations/20251003_create_media_table.sql`
 - Check that the migration was applied successfully
 
 **"Storage bucket not found"**
+
 - Run the bucket migration: `supabase/migrations/20251003_create_ppuk_buckets.sql`
 - Verify buckets exist in Supabase dashboard
 
 **"RLS policy violation"**
+
 - Check that user is authenticated
 - Verify property ownership
 - Check RLS policies are correctly configured
 
 **"Signed URL generation failed"**
+
 - Verify document exists in storage
 - Check file path is correct
 - Ensure user has permission to access the document
@@ -125,6 +138,7 @@ npm run verify:storage
 ```
 
 This will:
+
 - Check bucket existence
 - Verify media and documents data
 - Test signed URL generation
@@ -133,17 +147,20 @@ This will:
 ## Security Considerations
 
 ### Storage Bucket Security
+
 - **property-photos**: Public bucket for gallery display
 - **property-documents**: Private bucket requiring signed URLs
 - RLS policies control access at the database level
 
 ### File Upload Security
+
 - File type validation (client and server)
 - File size limits (5MB photos, 10MB documents)
 - Path sanitization to prevent directory traversal
 - Authentication required for all uploads
 
 ### Signed URL Security
+
 - 1-hour expiry for document access
 - User must be authenticated
 - Property ownership verified
@@ -152,11 +169,13 @@ This will:
 ## Performance Optimization
 
 ### Caching
+
 - Photos use public URLs for fast loading
 - Documents use signed URLs with 1-hour cache
 - Consider CDN for production deployment
 
 ### Database Indexes
+
 - `idx_media_property_id` for photo queries
 - `idx_media_type` for filtering by media type
 - `idx_documents_property_id` for document queries
@@ -164,12 +183,14 @@ This will:
 ## Monitoring
 
 ### Key Metrics to Monitor
+
 - Storage bucket usage
 - Upload success/failure rates
 - Signed URL generation performance
 - RLS policy effectiveness
 
 ### Logging
+
 - Upload attempts and results
 - Signed URL generation
 - RLS policy violations

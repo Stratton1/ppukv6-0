@@ -3,11 +3,11 @@
  * Extends the existing types.ts with the media table and fixes
  */
 
-import type { Database as BaseDatabase } from './types';
+import type { Database as BaseDatabase } from "./types";
 
 export type Database = BaseDatabase & {
-  public: BaseDatabase['public'] & {
-    Tables: BaseDatabase['public']['Tables'] & {
+  public: BaseDatabase["public"] & {
+    Tables: BaseDatabase["public"]["Tables"] & {
       media: {
         Row: {
           id: string;

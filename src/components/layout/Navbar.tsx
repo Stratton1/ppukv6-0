@@ -6,7 +6,7 @@ import { useState } from "react";
 const Navbar = () => {
   const location = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  
+
   const navItems = [
     { path: "/", label: "Home", icon: Home },
     { path: "/search", label: "Search", icon: Search },
@@ -24,7 +24,7 @@ const Navbar = () => {
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-6">
-            {navItems.map((item) => {
+            {navItems.map(item => {
               const Icon = item.icon;
               const isActive = location.pathname === item.path;
               return (
@@ -74,7 +74,7 @@ const Navbar = () => {
         {/* Mobile Menu */}
         {mobileMenuOpen && (
           <div className="md:hidden py-4 space-y-2 border-t">
-            {navItems.map((item) => {
+            {navItems.map(item => {
               const Icon = item.icon;
               return (
                 <Link

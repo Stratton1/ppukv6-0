@@ -27,9 +27,9 @@ export interface EPCData {
   propertyType: string;
   builtForm: string;
   totalFloorArea: number;
-  currentRating: 'A' | 'B' | 'C' | 'D' | 'E' | 'F' | 'G';
+  currentRating: "A" | "B" | "C" | "D" | "E" | "F" | "G";
   currentEfficiency: number;
-  environmentalImpactRating: 'A' | 'B' | 'C' | 'D' | 'E' | 'F' | 'G';
+  environmentalImpactRating: "A" | "B" | "C" | "D" | "E" | "F" | "G";
   environmentalImpactEfficiency: number;
   mainFuelType: string;
   mainHeatingDescription: string;
@@ -136,7 +136,7 @@ export interface HMLRData {
   titleNumber: string;
   address: string;
   postcode: string;
-  tenure: 'Freehold' | 'Leasehold' | 'Commonhold';
+  tenure: "Freehold" | "Leasehold" | "Commonhold";
   pricePaid?: number;
   pricePaidDate?: string;
   propertyType: string;
@@ -200,7 +200,7 @@ export interface FloodRiskData {
     groundwater: FloodRiskLevel;
     reservoirs: FloodRiskLevel;
   };
-  riskLevel: 'Very Low' | 'Low' | 'Medium' | 'High' | 'Very High';
+  riskLevel: "Very Low" | "Low" | "Medium" | "High" | "Very High";
   riskScore: number; // 0-10 scale
   lastUpdated: string;
   dataSource: string;
@@ -209,7 +209,7 @@ export interface FloodRiskData {
 }
 
 export interface FloodRiskLevel {
-  level: 'Very Low' | 'Low' | 'Medium' | 'High' | 'Very High';
+  level: "Very Low" | "Low" | "Medium" | "High" | "Very High";
   score: number; // 0-10 scale
   description: string;
   probability: string; // e.g., "1 in 100 years"
@@ -219,8 +219,8 @@ export interface FloodRiskLevel {
 
 export interface FloodWarning {
   id: string;
-  type: 'Flood Alert' | 'Flood Warning' | 'Severe Flood Warning';
-  severity: 'Low' | 'Medium' | 'High' | 'Severe';
+  type: "Flood Alert" | "Flood Warning" | "Severe Flood Warning";
+  severity: "Low" | "Medium" | "High" | "Severe";
   message: string;
   issuedDate: string;
   validUntil?: string;
@@ -230,8 +230,8 @@ export interface FloodWarning {
 
 export interface HistoricalFlood {
   date: string;
-  type: 'Surface Water' | 'River' | 'Coastal' | 'Groundwater';
-  severity: 'Minor' | 'Moderate' | 'Major';
+  type: "Surface Water" | "River" | "Coastal" | "Groundwater";
+  severity: "Minor" | "Moderate" | "Major";
   description: string;
   affectedAreas: string[];
   damageEstimate?: number;
@@ -250,7 +250,7 @@ export interface PlanningApplication {
   reference: string;
   address: string;
   description: string;
-  status: 'Approved' | 'Refused' | 'Pending' | 'Withdrawn';
+  status: "Approved" | "Refused" | "Pending" | "Withdrawn";
   applicationDate: string;
   decisionDate?: string;
   applicant: string;
@@ -277,10 +277,18 @@ export interface PlanningDocument {
 }
 
 export interface PlanningConstraint {
-  type: 'Conservation Area' | 'Listed Building' | 'Tree Preservation Order' | 'Article 4 Direction' | 'Green Belt' | 'AONB' | 'SSSI' | 'Flood Zone';
+  type:
+    | "Conservation Area"
+    | "Listed Building"
+    | "Tree Preservation Order"
+    | "Article 4 Direction"
+    | "Green Belt"
+    | "AONB"
+    | "SSSI"
+    | "Flood Zone";
   name: string;
   description: string;
-  status: 'Active' | 'Proposed' | 'Expired';
+  status: "Active" | "Proposed" | "Expired";
   date: string;
   authority: string;
   reference?: string;

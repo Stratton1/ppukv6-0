@@ -3,7 +3,7 @@
  * Provides error handling, logging, rate limiting, and caching utilities
  */
 
-import { RequestContext, ApiError, RateLimitInfo, CacheInfo } from './types.ts';
+import { RequestContext, ApiError, RateLimitInfo, CacheInfo } from "./types.ts";
 
 // Generate unique request ID
 export function generateRequestId(): string {
@@ -11,25 +11,24 @@ export function generateRequestId(): string {
 }
 
 // Create request context
-export function createRequestContext(req: Request, userId?: string, propertyId?: string): RequestContext {
+export function createRequestContext(
+  req: Request,
+  userId?: string,
+  propertyId?: string
+): RequestContext {
   return {
     requestId: generateRequestId(),
     userId,
     propertyId,
     timestamp: new Date().toISOString(),
-    userAgent: req.headers.get('user-agent') || undefined,
-    ipAddress: req.headers.get('x-forwarded-for') || req.headers.get('x-real-ip') || undefined,
+    userAgent: req.headers.get("user-agent") || undefined,
+    ipAddress: req.headers.get("x-forwarded-for") || req.headers.get("x-real-ip") || undefined,
   };
 }
 
 // Error handling utilities
 export class ApiErrorHandler {
-  static createError(
-    code: string,
-    message: string,
-    details?: any,
-    requestId?: string
-  ): ApiError {
+  static createError(code: string, message: string, details?: any, requestId?: string): ApiError {
     return {
       code,
       message,
@@ -40,27 +39,17 @@ export class ApiErrorHandler {
   }
 
   static createNotFoundError(resource: string, requestId?: string): ApiError {
-    return this.createError(
-      'NOT_FOUND',
-      `${resource} not found`,
-      undefined,
-      requestId
-    );
+    return this.createError("NOT_FOUND", `${resource} not found`, undefined, requestId);
   }
 
   static createValidationError(message: string, details?: any, requestId?: string): ApiError {
-    return this.createError(
-      'VALIDATION_ERROR',
-      message,
-      details,
-      requestId
-    );
+    return this.createError("VALIDATION_ERROR", message, details, requestId);
   }
 
   static createRateLimitError(retryAfter?: number, requestId?: string): ApiError {
     return this.createError(
-      'RATE_LIMIT_EXCEEDED',
-      'Rate limit exceeded',
+      "RATE_LIMIT_EXCEEDED",
+      "Rate limit exceeded",
       { retryAfter },
       requestId
     );
@@ -68,7 +57,7 @@ export class ApiErrorHandler {
 
   static createExternalApiError(service: string, message: string, requestId?: string): ApiError {
     return this.createError(
-      'EXTERNAL_API_ERROR',
+      "EXTERNAL_API_ERROR",
       `${service} API error: ${message}`,
       { service },
       requestId
@@ -76,12 +65,7 @@ export class ApiErrorHandler {
   }
 
   static createInternalError(message: string, requestId?: string): ApiError {
-    return this.createError(
-      'INTERNAL_ERROR',
-      message,
-      undefined,
-      requestId
-    );
+    return this.createError("INTERNAL_ERROR", message, undefined, requestId);
   }
 }
 
@@ -107,26 +91,30 @@ export class Logger {
   }
 
   info(message: string, data?: any): void {
-    console.log(this.formatLog('INFO', message, data));
+    console.log(this.formatLog("INFO", message, data));
   }
 
   warn(message: string, data?: any): void {
-    console.warn(this.formatLog('WARN', message, data));
+    console.warn(this.formatLog("WARN", message, data));
   }
 
   error(message: string, error?: Error, data?: any): void {
-    console.error(this.formatLog('ERROR', message, {
-      error: error ? {
-        name: error.name,
-        message: error.message,
-        stack: error.stack,
-      } : undefined,
-      ...data,
-    }));
+    console.error(
+      this.formatLog("ERROR", message, {
+        error: error
+          ? {
+              name: error.name,
+              message: error.message,
+              stack: error.stack,
+            }
+          : undefined,
+        ...data,
+      })
+    );
   }
 
   debug(message: string, data?: any): void {
-    console.debug(this.formatLog('DEBUG', message, data));
+    console.debug(this.formatLog("DEBUG", message, data));
   }
 }
 
@@ -149,19 +137,21 @@ export class RateLimiter {
     // This is a simplified implementation
     // In production, use Redis with proper atomic operations
     const current = await this.getCurrentCount(key, windowStart);
-    
+
     if (current >= limit) {
       const reset = now + window;
       const retryAfter = window - (now % window);
-      
-      throw new Error(JSON.stringify({
-        code: 'RATE_LIMIT_EXCEEDED',
-        message: 'Rate limit exceeded',
-        limit,
-        remaining: 0,
-        reset,
-        retryAfter,
-      }));
+
+      throw new Error(
+        JSON.stringify({
+          code: "RATE_LIMIT_EXCEEDED",
+          message: "Rate limit exceeded",
+          limit,
+          remaining: 0,
+          reset,
+          retryAfter,
+        })
+      );
     }
 
     await this.incrementCount(key, now, window);
@@ -178,7 +168,11 @@ export class RateLimiter {
     return 0;
   }
 
-  private static async incrementCount(key: string, timestamp: number, window: number): Promise<void> {
+  private static async incrementCount(
+    key: string,
+    timestamp: number,
+    window: number
+  ): Promise<void> {
     // Simplified implementation - in production use Redis
     // This would increment a counter and set expiration
   }
@@ -208,7 +202,7 @@ export class CacheManager {
     const sortedParams = Object.keys(params)
       .sort()
       .map(key => `${key}:${params[key]}`)
-      .join('|');
+      .join("|");
     return `${prefix}:${sortedParams}`;
   }
 
@@ -224,12 +218,16 @@ export class CacheManager {
 
 // HTTP utilities
 export class HttpUtils {
-  static createResponse<T>(data: T, status: number = 200, headers?: Record<string, string>): Response {
+  static createResponse<T>(
+    data: T,
+    status: number = 200,
+    headers?: Record<string, string>
+  ): Response {
     const responseHeaders = new Headers({
-      'Content-Type': 'application/json',
-      'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-      'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+      "Content-Type": "application/json",
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+      "Access-Control-Allow-Headers": "Content-Type, Authorization",
       ...headers,
     });
 
@@ -253,13 +251,13 @@ export class HttpUtils {
   }
 
   static async handleCors(req: Request): Promise<Response | null> {
-    if (req.method === 'OPTIONS') {
+    if (req.method === "OPTIONS") {
       return new Response(null, {
         status: 200,
         headers: {
-          'Access-Control-Allow-Origin': '*',
-          'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-          'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+          "Access-Control-Allow-Origin": "*",
+          "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+          "Access-Control-Allow-Headers": "Content-Type, Authorization",
         },
       });
     }
@@ -286,20 +284,20 @@ export class ExternalApiClient {
   ): Promise<T> {
     const url = `${this.baseUrl}${endpoint}`;
     const headers = new Headers(options.headers);
-    
+
     if (this.apiKey) {
-      headers.set('Authorization', `Bearer ${this.apiKey}`);
+      headers.set("Authorization", `Bearer ${this.apiKey}`);
     }
-    
-    headers.set('Content-Type', 'application/json');
-    headers.set('User-Agent', 'PPUK-API-Client/1.0');
+
+    headers.set("Content-Type", "application/json");
+    headers.set("User-Agent", "PPUK-API-Client/1.0");
 
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), timeout);
 
     try {
       this.logger.debug(`Making request to ${url}`, { options });
-      
+
       const response = await fetch(url, {
         ...options,
         headers,
@@ -316,22 +314,22 @@ export class ExternalApiClient {
           statusText: response.statusText,
           error: errorText,
         });
-        
+
         throw new Error(`API request failed: ${response.status} ${response.statusText}`);
       }
 
       const data = await response.json();
       this.logger.debug(`API request successful`, { url, status: response.status });
-      
+
       return data;
     } catch (error) {
       clearTimeout(timeoutId);
-      
-      if (error.name === 'AbortError') {
+
+      if (error.name === "AbortError") {
         this.logger.error(`API request timeout`, error, { url, timeout });
         throw new Error(`API request timeout after ${timeout}ms`);
       }
-      
+
       this.logger.error(`API request error`, error, { url });
       throw error;
     }
@@ -344,13 +342,13 @@ export class ExternalApiClient {
         url.searchParams.set(key, String(value));
       });
     }
-    
-    return this.makeRequest<T>(url.pathname + url.search, { method: 'GET' });
+
+    return this.makeRequest<T>(url.pathname + url.search, { method: "GET" });
   }
 
   async post<T>(endpoint: string, data?: any): Promise<T> {
     return this.makeRequest<T>(endpoint, {
-      method: 'POST',
+      method: "POST",
       body: data ? JSON.stringify(data) : undefined,
     });
   }
@@ -358,7 +356,7 @@ export class ExternalApiClient {
 
 // Validation utilities
 export function sanitizeInput(input: string): string {
-  return input.trim().replace(/[<>]/g, '');
+  return input.trim().replace(/[<>]/g, "");
 }
 
 export function validatePostcode(postcode: string): boolean {

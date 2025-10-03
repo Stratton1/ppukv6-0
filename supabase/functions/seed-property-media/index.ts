@@ -6,7 +6,7 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-serve(async (req) => {
+serve(async req => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
@@ -99,7 +99,8 @@ serve(async (req) => {
             mime_type: "application/pdf",
             description: "Energy Performance Certificate - Rating B (85)",
             uploaded_by: property.claimed_by || "00000000-0000-0000-0000-000000000000",
-            ai_summary: "Property has good energy efficiency with modern insulation and heating system.",
+            ai_summary:
+              "Property has good energy efficiency with modern insulation and heating system.",
           },
           {
             property_id: property.id,
@@ -113,9 +114,7 @@ serve(async (req) => {
           },
         ];
 
-        const { error: docsError } = await supabaseAdmin
-          .from("documents")
-          .insert(docsToAdd);
+        const { error: docsError } = await supabaseAdmin.from("documents").insert(docsToAdd);
 
         if (!docsError) {
           docsAdded += docsToAdd.length;
@@ -137,12 +136,9 @@ serve(async (req) => {
     );
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : "Unknown error";
-    return new Response(
-      JSON.stringify({ error: errorMessage }),
-      {
-        status: 500,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      }
-    );
+    return new Response(JSON.stringify({ error: errorMessage }), {
+      status: 500,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
   }
 });

@@ -3,7 +3,7 @@
  * Provides typed interfaces and mock data for additional free APIs
  */
 
-import type { PropertyIdentifier } from '../../types/api';
+import type { PropertyIdentifier } from "../../types/api";
 
 // ============================================================================
 // POLICE UK API - Crime Statistics
@@ -19,7 +19,7 @@ export interface CrimeData {
     crimesByMonth: CrimeByMonth[];
     crimeRate: number; // crimes per 1000 people
   };
-  safetyRating: 'Very Safe' | 'Safe' | 'Moderate' | 'Concerning' | 'High Risk';
+  safetyRating: "Very Safe" | "Safe" | "Moderate" | "Concerning" | "High Risk";
   comparison: {
     nationalAverage: number;
     localAuthorityAverage: number;
@@ -31,7 +31,7 @@ export interface CrimeCategory {
   category: string;
   count: number;
   percentage: number;
-  trend: 'up' | 'down' | 'stable';
+  trend: "up" | "down" | "stable";
 }
 
 export interface CrimeByMonth {
@@ -74,7 +74,7 @@ export interface PlaceOfInterest {
   distance: number; // meters
   rating?: number;
   address: string;
-  category: 'education' | 'healthcare' | 'transport' | 'amenity' | 'entertainment';
+  category: "education" | "healthcare" | "transport" | "amenity" | "entertainment";
 }
 
 // ============================================================================
@@ -102,9 +102,14 @@ export interface EducationData {
 
 export interface School {
   name: string;
-  type: 'Primary' | 'Secondary' | 'Special' | 'Independent';
-  phase: 'Primary' | 'Secondary' | 'All-through';
-  ofstedRating: 'Outstanding' | 'Good' | 'Requires improvement' | 'Inadequate' | 'Not yet inspected';
+  type: "Primary" | "Secondary" | "Special" | "Independent";
+  phase: "Primary" | "Secondary" | "All-through";
+  ofstedRating:
+    | "Outstanding"
+    | "Good"
+    | "Requires improvement"
+    | "Inadequate"
+    | "Not yet inspected";
   distance: number; // meters
   address: string;
   postcode: string;
@@ -134,19 +139,19 @@ export interface EnvironmentalData {
     road: number; // dB
     rail: number;
     air: number;
-    overall: 'Low' | 'Moderate' | 'High' | 'Very High';
+    overall: "Low" | "Moderate" | "High" | "Very High";
   };
   greenSpaces: {
     parks: GreenSpace[];
     natureReserves: GreenSpace[];
     totalArea: number; // hectares within 1km
-    accessibility: 'Excellent' | 'Good' | 'Moderate' | 'Poor';
+    accessibility: "Excellent" | "Good" | "Moderate" | "Poor";
   };
   environmentalRisks: {
-    floodRisk: 'Low' | 'Medium' | 'High';
+    floodRisk: "Low" | "Medium" | "High";
     pollutionIncidents: number; // last 12 months
     contaminatedLand: boolean;
-    radonRisk: 'Low' | 'Medium' | 'High';
+    radonRisk: "Low" | "Medium" | "High";
   };
 }
 
@@ -154,17 +159,17 @@ export interface AirPollutant {
   name: string;
   level: number;
   unit: string;
-  healthImpact: 'Low' | 'Moderate' | 'High' | 'Very High';
+  healthImpact: "Low" | "Moderate" | "High" | "Very High";
   source: string;
 }
 
 export interface GreenSpace {
   name: string;
-  type: 'Park' | 'Nature Reserve' | 'Woodland' | 'Garden' | 'Playing Field';
+  type: "Park" | "Nature Reserve" | "Woodland" | "Garden" | "Playing Field";
   distance: number; // meters
   size: number; // hectares
   facilities: string[];
-  accessibility: 'Public' | 'Restricted' | 'Private';
+  accessibility: "Public" | "Restricted" | "Private";
 }
 
 // ============================================================================
@@ -184,13 +189,13 @@ export interface HeritageData {
     gradeIIStar: number;
     gradeII: number;
     inConservationArea: boolean;
-    heritageValue: 'Exceptional' | 'High' | 'Moderate' | 'Low' | 'None';
+    heritageValue: "Exceptional" | "High" | "Moderate" | "Low" | "None";
   };
 }
 
 export interface ListedBuilding {
   name: string;
-  grade: 'I' | 'II*' | 'II';
+  grade: "I" | "II*" | "II";
   listEntry: string;
   description: string;
   dateListed: string;
@@ -308,7 +313,7 @@ export interface TopographicData {
     area: number; // square meters
     perimeter: number; // meters
     coordinates: GeoCoordinate[];
-    accuracy: 'High' | 'Medium' | 'Low';
+    accuracy: "High" | "Medium" | "Low";
   };
   topography: {
     elevation: number; // meters above sea level
@@ -330,7 +335,7 @@ export interface TopographicData {
     broadband: BroadbandInfo;
   };
   access: {
-    roadAccess: 'Excellent' | 'Good' | 'Moderate' | 'Poor';
+    roadAccess: "Excellent" | "Good" | "Moderate" | "Poor";
     publicTransport: PublicTransportInfo;
     parking: ParkingInfo;
   };
@@ -345,26 +350,26 @@ export interface BroadbandInfo {
   available: boolean;
   maxSpeed: number; // Mbps
   providers: string[];
-  coverage: 'Full' | 'Partial' | 'Limited';
+  coverage: "Full" | "Partial" | "Limited";
 }
 
 export interface PublicTransportInfo {
   busStops: TransportStop[];
   trainStations: TransportStop[];
-  frequency: 'High' | 'Medium' | 'Low' | 'None';
-  accessibility: 'Excellent' | 'Good' | 'Moderate' | 'Poor';
+  frequency: "High" | "Medium" | "Low" | "None";
+  accessibility: "Excellent" | "Good" | "Moderate" | "Poor";
 }
 
 export interface TransportStop {
   name: string;
-  type: 'Bus' | 'Train' | 'Tram' | 'Metro';
+  type: "Bus" | "Train" | "Tram" | "Metro";
   distance: number; // meters
   services: string[];
   frequency: string;
 }
 
 export interface ParkingInfo {
-  onStreet: 'Permit' | 'Pay & Display' | 'Free' | 'Restricted';
+  onStreet: "Permit" | "Pay & Display" | "Free" | "Restricted";
   offStreet: boolean;
   garages: number;
   driveways: number;
@@ -390,41 +395,43 @@ export interface ExternalApiClient {
 
 export function generateMockCrimeData(property: PropertyIdentifier): CrimeData {
   return {
-    address: property.address || 'Sample Address',
+    address: property.address || "Sample Address",
     postcode: property.postcode,
     lastUpdated: new Date().toISOString(),
     crimeStats: {
       totalCrimes: Math.floor(Math.random() * 50) + 10,
       crimesByCategory: [
-        { category: 'Anti-social behaviour', count: 15, percentage: 45, trend: 'down' },
-        { category: 'Violence and sexual offences', count: 8, percentage: 24, trend: 'stable' },
-        { category: 'Criminal damage and arson', count: 5, percentage: 15, trend: 'up' },
-        { category: 'Other theft', count: 3, percentage: 9, trend: 'stable' },
-        { category: 'Vehicle crime', count: 2, percentage: 7, trend: 'down' }
+        { category: "Anti-social behaviour", count: 15, percentage: 45, trend: "down" },
+        { category: "Violence and sexual offences", count: 8, percentage: 24, trend: "stable" },
+        { category: "Criminal damage and arson", count: 5, percentage: 15, trend: "up" },
+        { category: "Other theft", count: 3, percentage: 9, trend: "stable" },
+        { category: "Vehicle crime", count: 2, percentage: 7, trend: "down" },
       ],
       crimesByMonth: Array.from({ length: 12 }, (_, i) => ({
-        month: new Date(2024, i).toLocaleDateString('en-GB', { month: 'short' }),
+        month: new Date(2024, i).toLocaleDateString("en-GB", { month: "short" }),
         count: Math.floor(Math.random() * 10) + 1,
         categories: {
-          'Anti-social behaviour': Math.floor(Math.random() * 5) + 1,
-          'Violence and sexual offences': Math.floor(Math.random() * 3) + 1,
-          'Criminal damage and arson': Math.floor(Math.random() * 2) + 1
-        }
+          "Anti-social behaviour": Math.floor(Math.random() * 5) + 1,
+          "Violence and sexual offences": Math.floor(Math.random() * 3) + 1,
+          "Criminal damage and arson": Math.floor(Math.random() * 2) + 1,
+        },
       })),
-      crimeRate: Math.floor(Math.random() * 20) + 5
+      crimeRate: Math.floor(Math.random() * 20) + 5,
     },
-    safetyRating: (['Very Safe', 'Safe', 'Moderate', 'Concerning', 'High Risk'] as const)[Math.floor(Math.random() * 5)],
+    safetyRating: (["Very Safe", "Safe", "Moderate", "Concerning", "High Risk"] as const)[
+      Math.floor(Math.random() * 5)
+    ],
     comparison: {
       nationalAverage: 12.5,
       localAuthorityAverage: 15.2,
-      percentile: Math.floor(Math.random() * 100)
-    }
+      percentile: Math.floor(Math.random() * 100),
+    },
   };
 }
 
 export function generateMockStreetViewData(property: PropertyIdentifier): StreetViewData {
   return {
-    address: property.address || 'Sample Address',
+    address: property.address || "Sample Address",
     postcode: property.postcode,
     lastUpdated: new Date().toISOString(),
     streetView: {
@@ -432,68 +439,120 @@ export function generateMockStreetViewData(property: PropertyIdentifier): Street
       imageUrl: `https://maps.googleapis.com/maps/api/streetview?size=400x300&location=${encodeURIComponent(property.address || property.postcode)}&key=YOUR_API_KEY`,
       heading: Math.floor(Math.random() * 360),
       pitch: Math.floor(Math.random() * 40) - 20,
-      fov: 90
+      fov: 90,
     },
     nearbyPlaces: {
       schools: [
-        { name: 'Local Primary School', type: 'Primary School', distance: 250, rating: 4.2, address: '123 School Lane', category: 'education' },
-        { name: 'Secondary Academy', type: 'Secondary School', distance: 800, rating: 3.8, address: '456 Academy Road', category: 'education' }
+        {
+          name: "Local Primary School",
+          type: "Primary School",
+          distance: 250,
+          rating: 4.2,
+          address: "123 School Lane",
+          category: "education",
+        },
+        {
+          name: "Secondary Academy",
+          type: "Secondary School",
+          distance: 800,
+          rating: 3.8,
+          address: "456 Academy Road",
+          category: "education",
+        },
       ],
       hospitals: [
-        { name: 'General Hospital', type: 'Hospital', distance: 1200, rating: 4.0, address: '789 Hospital Way', category: 'healthcare' }
+        {
+          name: "General Hospital",
+          type: "Hospital",
+          distance: 1200,
+          rating: 4.0,
+          address: "789 Hospital Way",
+          category: "healthcare",
+        },
       ],
       transport: [
-        { name: 'Bus Stop', type: 'Bus Stop', distance: 150, address: 'Main Street', category: 'transport' },
-        { name: 'Train Station', type: 'Railway Station', distance: 2000, rating: 4.1, address: 'Station Road', category: 'transport' }
+        {
+          name: "Bus Stop",
+          type: "Bus Stop",
+          distance: 150,
+          address: "Main Street",
+          category: "transport",
+        },
+        {
+          name: "Train Station",
+          type: "Railway Station",
+          distance: 2000,
+          rating: 4.1,
+          address: "Station Road",
+          category: "transport",
+        },
       ],
       amenities: [
-        { name: 'Local Supermarket', type: 'Supermarket', distance: 300, rating: 4.3, address: 'High Street', category: 'amenity' },
-        { name: 'Community Centre', type: 'Community Centre', distance: 500, address: 'Community Lane', category: 'amenity' }
-      ]
+        {
+          name: "Local Supermarket",
+          type: "Supermarket",
+          distance: 300,
+          rating: 4.3,
+          address: "High Street",
+          category: "amenity",
+        },
+        {
+          name: "Community Centre",
+          type: "Community Centre",
+          distance: 500,
+          address: "Community Lane",
+          category: "amenity",
+        },
+      ],
     },
     walkability: {
       score: Math.floor(Math.random() * 40) + 60,
-      description: 'Good walkability with nearby amenities and transport links',
-      factors: ['Nearby shops', 'Public transport', 'Parks and green spaces', 'Schools within walking distance']
-    }
+      description: "Good walkability with nearby amenities and transport links",
+      factors: [
+        "Nearby shops",
+        "Public transport",
+        "Parks and green spaces",
+        "Schools within walking distance",
+      ],
+    },
   };
 }
 
 export function generateMockEducationData(property: PropertyIdentifier): EducationData {
   return {
-    address: property.address || 'Sample Address',
+    address: property.address || "Sample Address",
     postcode: property.postcode,
     lastUpdated: new Date().toISOString(),
     schools: [
       {
-        name: 'St. Mary\'s Primary School',
-        type: 'Primary',
-        phase: 'Primary',
-        ofstedRating: 'Good',
+        name: "St. Mary's Primary School",
+        type: "Primary",
+        phase: "Primary",
+        ofstedRating: "Good",
         distance: 250,
-        address: '123 School Lane',
+        address: "123 School Lane",
         postcode: property.postcode,
         capacity: 210,
         pupils: 195,
-        lastInspection: '2023-03-15',
-        nextInspection: '2027-03-15',
-        website: 'https://stmarysprimary.school',
-        phone: '01234 567890'
+        lastInspection: "2023-03-15",
+        nextInspection: "2027-03-15",
+        website: "https://stmarysprimary.school",
+        phone: "01234 567890",
       },
       {
-        name: 'Local Secondary Academy',
-        type: 'Secondary',
-        phase: 'Secondary',
-        ofstedRating: 'Outstanding',
+        name: "Local Secondary Academy",
+        type: "Secondary",
+        phase: "Secondary",
+        ofstedRating: "Outstanding",
         distance: 800,
-        address: '456 Academy Road',
+        address: "456 Academy Road",
         postcode: property.postcode,
         capacity: 1200,
         pupils: 1150,
-        lastInspection: '2022-11-20',
-        website: 'https://localacademy.school',
-        phone: '01234 567891'
-      }
+        lastInspection: "2022-11-20",
+        website: "https://localacademy.school",
+        phone: "01234 567891",
+      },
     ],
     educationSummary: {
       totalSchools: 2,
@@ -501,12 +560,12 @@ export function generateMockEducationData(property: PropertyIdentifier): Educati
       goodSchools: 1,
       requiresImprovement: 0,
       inadequateSchools: 0,
-      averageRating: 4.5
+      averageRating: 4.5,
     },
     catchmentAreas: {
-      primary: ['St. Mary\'s Primary School'],
-      secondary: ['Local Secondary Academy']
-    }
+      primary: ["St. Mary's Primary School"],
+      secondary: ["Local Secondary Academy"],
+    },
   };
 }
 
@@ -534,58 +593,65 @@ export class MockExternalApiClient implements ExternalApiClient {
   async getEnvironmentalData(property: PropertyIdentifier): Promise<EnvironmentalData> {
     await new Promise(resolve => setTimeout(resolve, 600));
     return {
-      address: property.address || 'Sample Address',
+      address: property.address || "Sample Address",
       postcode: property.postcode,
       lastUpdated: new Date().toISOString(),
       airQuality: {
         overallIndex: Math.floor(Math.random() * 5) + 1,
         pollutants: [
-          { name: 'PM2.5', level: 12, unit: 'μg/m³', healthImpact: 'Low', source: 'Traffic' },
-          { name: 'NO2', level: 25, unit: 'μg/m³', healthImpact: 'Moderate', source: 'Vehicles' }
+          { name: "PM2.5", level: 12, unit: "μg/m³", healthImpact: "Low", source: "Traffic" },
+          { name: "NO2", level: 25, unit: "μg/m³", healthImpact: "Moderate", source: "Vehicles" },
         ],
-        healthAdvice: 'Air quality is generally good for most people',
-        sensitiveGroups: ['People with heart or lung conditions']
+        healthAdvice: "Air quality is generally good for most people",
+        sensitiveGroups: ["People with heart or lung conditions"],
       },
       noiseLevels: {
         road: 45,
         rail: 35,
         air: 25,
-        overall: 'Low'
+        overall: "Low",
       },
       greenSpaces: {
         parks: [
-          { name: 'Local Park', type: 'Park', distance: 300, size: 2.5, facilities: ['Playground', 'Football pitch'], accessibility: 'Public' }
+          {
+            name: "Local Park",
+            type: "Park",
+            distance: 300,
+            size: 2.5,
+            facilities: ["Playground", "Football pitch"],
+            accessibility: "Public",
+          },
         ],
         natureReserves: [],
         totalArea: 2.5,
-        accessibility: 'Good'
+        accessibility: "Good",
       },
       environmentalRisks: {
-        floodRisk: 'Low',
+        floodRisk: "Low",
         pollutionIncidents: 0,
         contaminatedLand: false,
-        radonRisk: 'Low'
-      }
+        radonRisk: "Low",
+      },
     };
   }
 
   async getHeritageData(property: PropertyIdentifier): Promise<HeritageData> {
     await new Promise(resolve => setTimeout(resolve, 400));
     return {
-      address: property.address || 'Sample Address',
+      address: property.address || "Sample Address",
       postcode: property.postcode,
       lastUpdated: new Date().toISOString(),
       listedBuildings: [
         {
-          name: 'Historic Church',
-          grade: 'II*',
-          listEntry: '1234567',
-          description: 'Victorian church with notable architectural features',
-          dateListed: '1985-03-15',
+          name: "Historic Church",
+          grade: "II*",
+          listEntry: "1234567",
+          description: "Victorian church with notable architectural features",
+          dateListed: "1985-03-15",
           distance: 500,
-          address: 'Church Lane',
-          significance: 'Local landmark with historical importance'
-        }
+          address: "Church Lane",
+          significance: "Local landmark with historical importance",
+        },
       ],
       conservationAreas: [],
       scheduledMonuments: [],
@@ -595,86 +661,86 @@ export class MockExternalApiClient implements ExternalApiClient {
         gradeIIStar: 1,
         gradeII: 0,
         inConservationArea: false,
-        heritageValue: 'Moderate'
-      }
+        heritageValue: "Moderate",
+      },
     };
   }
 
   async getDemographicsData(property: PropertyIdentifier): Promise<DemographicsData> {
     await new Promise(resolve => setTimeout(resolve, 500));
     return {
-      address: property.address || 'Sample Address',
+      address: property.address || "Sample Address",
       postcode: property.postcode,
       lastUpdated: new Date().toISOString(),
       population: {
         total: 2500,
         density: 12.5,
         ageDistribution: [
-          { range: '0-17', count: 400, percentage: 16 },
-          { range: '18-34', count: 600, percentage: 24 },
-          { range: '35-54', count: 700, percentage: 28 },
-          { range: '55-64', count: 400, percentage: 16 },
-          { range: '65+', count: 400, percentage: 16 }
+          { range: "0-17", count: 400, percentage: 16 },
+          { range: "18-34", count: 600, percentage: 24 },
+          { range: "35-54", count: 700, percentage: 28 },
+          { range: "55-64", count: 400, percentage: 16 },
+          { range: "65+", count: 400, percentage: 16 },
         ],
         householdComposition: [
-          { type: 'Single person', count: 300, percentage: 30 },
-          { type: 'Couple', count: 400, percentage: 40 },
-          { type: 'Family with children', count: 200, percentage: 20 },
-          { type: 'Other', count: 100, percentage: 10 }
-        ]
+          { type: "Single person", count: 300, percentage: 30 },
+          { type: "Couple", count: 400, percentage: 40 },
+          { type: "Family with children", count: 200, percentage: 20 },
+          { type: "Other", count: 100, percentage: 10 },
+        ],
       },
       socioeconomics: {
         averageIncome: 35000,
         employmentRate: 85,
         educationLevels: [
-          { level: 'No qualifications', count: 200, percentage: 20 },
-          { level: 'GCSE or equivalent', count: 300, percentage: 30 },
-          { level: 'A-level or equivalent', count: 250, percentage: 25 },
-          { level: 'Degree or higher', count: 250, percentage: 25 }
+          { level: "No qualifications", count: 200, percentage: 20 },
+          { level: "GCSE or equivalent", count: 300, percentage: 30 },
+          { level: "A-level or equivalent", count: 250, percentage: 25 },
+          { level: "Degree or higher", count: 250, percentage: 25 },
         ],
-        deprivationIndex: 5
+        deprivationIndex: 5,
       },
       housing: {
         totalDwellings: 1000,
         dwellingTypes: [
-          { type: 'Detached', count: 200, percentage: 20 },
-          { type: 'Semi-detached', count: 300, percentage: 30 },
-          { type: 'Terraced', count: 250, percentage: 25 },
-          { type: 'Flat', count: 250, percentage: 25 }
+          { type: "Detached", count: 200, percentage: 20 },
+          { type: "Semi-detached", count: 300, percentage: 30 },
+          { type: "Terraced", count: 250, percentage: 25 },
+          { type: "Flat", count: 250, percentage: 25 },
         ],
         occupancy: {
           ownerOccupied: 600,
           privateRented: 300,
           socialRented: 80,
-          vacant: 20
-        }
+          vacant: 20,
+        },
       },
       diversity: {
         ethnicGroups: [
-          { group: 'White British', count: 2000, percentage: 80 },
-          { group: 'White Other', count: 200, percentage: 8 },
-          { group: 'Asian', count: 150, percentage: 6 },
-          { group: 'Black', count: 100, percentage: 4 },
-          { group: 'Other', count: 50, percentage: 2 }
+          { group: "White British", count: 2000, percentage: 80 },
+          { group: "White Other", count: 200, percentage: 8 },
+          { group: "Asian", count: 150, percentage: 6 },
+          { group: "Black", count: 100, percentage: 4 },
+          { group: "Other", count: 50, percentage: 2 },
         ],
         languages: [
-          { language: 'English', speakers: 2400, percentage: 96 },
-          { language: 'Polish', speakers: 50, percentage: 2 },
-          { language: 'Other', speakers: 50, percentage: 2 }
+          { language: "English", speakers: 2400, percentage: 96 },
+          { language: "Polish", speakers: 50, percentage: 2 },
+          { language: "Other", speakers: 50, percentage: 2 },
         ],
         religions: [
-          { religion: 'Christian', adherents: 1500, percentage: 60 },
-          { religion: 'No religion', adherents: 800, percentage: 32 },
-          { religion: 'Other', adherents: 200, percentage: 8 }
-        ]
-      }
+          { religion: "Christian", adherents: 1500, percentage: 60 },
+          { religion: "No religion", adherents: 800, percentage: 32 },
+          { religion: "Other", adherents: 200, percentage: 8 },
+        ],
+      },
     };
   }
 
   async getTopographicData(property: PropertyIdentifier): Promise<TopographicData> {
     await new Promise(resolve => setTimeout(resolve, 400));
     return {
-      address: property.address || 'Sample Address',
+      address: property.address || "Sample Address",
       postcode: property.postcode,
       lastUpdated: new Date().toISOString(),
       propertyBoundary: {
@@ -684,20 +750,20 @@ export class MockExternalApiClient implements ExternalApiClient {
           { latitude: 51.5074, longitude: -0.1278 },
           { latitude: 51.5075, longitude: -0.1278 },
           { latitude: 51.5075, longitude: -0.1277 },
-          { latitude: 51.5074, longitude: -0.1277 }
+          { latitude: 51.5074, longitude: -0.1277 },
         ],
-        accuracy: 'High'
+        accuracy: "High",
       },
       topography: {
         elevation: 25,
         slope: 2,
         aspect: 180,
-        terrain: 'Flat'
+        terrain: "Flat",
       },
       landUse: {
-        primary: 'Residential',
-        secondary: 'Garden',
-        planningDesignation: 'Residential Zone'
+        primary: "Residential",
+        secondary: "Garden",
+        planningDesignation: "Residential Zone",
       },
       utilities: {
         gas: true,
@@ -707,29 +773,41 @@ export class MockExternalApiClient implements ExternalApiClient {
         broadband: {
           available: true,
           maxSpeed: 100,
-          providers: ['BT', 'Virgin Media', 'Sky'],
-          coverage: 'Full'
-        }
+          providers: ["BT", "Virgin Media", "Sky"],
+          coverage: "Full",
+        },
       },
       access: {
-        roadAccess: 'Good',
+        roadAccess: "Good",
         publicTransport: {
           busStops: [
-            { name: 'Main Street', type: 'Bus', distance: 150, services: ['1', '2', '3'], frequency: 'Every 10 minutes' }
+            {
+              name: "Main Street",
+              type: "Bus",
+              distance: 150,
+              services: ["1", "2", "3"],
+              frequency: "Every 10 minutes",
+            },
           ],
           trainStations: [
-            { name: 'Central Station', type: 'Train', distance: 2000, services: ['London', 'Birmingham'], frequency: 'Every 30 minutes' }
+            {
+              name: "Central Station",
+              type: "Train",
+              distance: 2000,
+              services: ["London", "Birmingham"],
+              frequency: "Every 30 minutes",
+            },
           ],
-          frequency: 'High',
-          accessibility: 'Good'
+          frequency: "High",
+          accessibility: "Good",
         },
         parking: {
-          onStreet: 'Permit',
+          onStreet: "Permit",
           offStreet: true,
           garages: 1,
-          driveways: 1
-        }
-      }
+          driveways: 1,
+        },
+      },
     };
   }
 }
@@ -741,10 +819,17 @@ export class MockExternalApiClient implements ExternalApiClient {
 export const externalApiClient = new MockExternalApiClient();
 
 // Convenience functions
-export const getCrimeData = (property: PropertyIdentifier) => externalApiClient.getCrimeData(property);
-export const getStreetViewData = (property: PropertyIdentifier) => externalApiClient.getStreetViewData(property);
-export const getEducationData = (property: PropertyIdentifier) => externalApiClient.getEducationData(property);
-export const getEnvironmentalData = (property: PropertyIdentifier) => externalApiClient.getEnvironmentalData(property);
-export const getHeritageData = (property: PropertyIdentifier) => externalApiClient.getHeritageData(property);
-export const getDemographicsData = (property: PropertyIdentifier) => externalApiClient.getDemographicsData(property);
-export const getTopographicData = (property: PropertyIdentifier) => externalApiClient.getTopographicData(property);
+export const getCrimeData = (property: PropertyIdentifier) =>
+  externalApiClient.getCrimeData(property);
+export const getStreetViewData = (property: PropertyIdentifier) =>
+  externalApiClient.getStreetViewData(property);
+export const getEducationData = (property: PropertyIdentifier) =>
+  externalApiClient.getEducationData(property);
+export const getEnvironmentalData = (property: PropertyIdentifier) =>
+  externalApiClient.getEnvironmentalData(property);
+export const getHeritageData = (property: PropertyIdentifier) =>
+  externalApiClient.getHeritageData(property);
+export const getDemographicsData = (property: PropertyIdentifier) =>
+  externalApiClient.getDemographicsData(property);
+export const getTopographicData = (property: PropertyIdentifier) =>
+  externalApiClient.getTopographicData(property);

@@ -35,7 +35,7 @@ export interface EPCRecommendation {
   cost: number;
   savings: number;
   paybackPeriod: number;
-  priority: 'High' | 'Medium' | 'Low';
+  priority: "High" | "Medium" | "Low";
 }
 
 // HMLR (HM Land Registry) types
@@ -47,7 +47,7 @@ export interface HMLRData {
   owner: string;
   lastSold: string;
   price: number;
-  tenure: 'Freehold' | 'Leasehold' | 'Commonhold';
+  tenure: "Freehold" | "Leasehold" | "Commonhold";
   propertyType: string;
   buildDate?: string;
   planningRestrictions?: string[];
@@ -64,7 +64,7 @@ export interface HMLRCharge {
 
 // Flood Risk types
 export interface FloodRiskData {
-  riskLevel: 'Very Low' | 'Low' | 'Medium' | 'High' | 'Very High';
+  riskLevel: "Very Low" | "Low" | "Medium" | "High" | "Very High";
   address: string;
   postcode: string;
   uprn?: string;
@@ -76,15 +76,15 @@ export interface FloodRiskData {
 }
 
 export interface FloodRiskFactor {
-  type: 'River' | 'Surface Water' | 'Groundwater' | 'Reservoir' | 'Coastal';
-  riskLevel: 'Very Low' | 'Low' | 'Medium' | 'High' | 'Very High';
+  type: "River" | "Surface Water" | "Groundwater" | "Reservoir" | "Coastal";
+  riskLevel: "Very Low" | "Low" | "Medium" | "High" | "Very High";
   description: string;
   probability: number; // 0-100
 }
 
 export interface HistoricalFlood {
   date: string;
-  severity: 'Minor' | 'Moderate' | 'Severe';
+  severity: "Minor" | "Moderate" | "Severe";
   description: string;
   affectedAreas: string[];
 }
@@ -114,13 +114,13 @@ export interface ApiResponse<T> {
 }
 
 // Request types for each API
-export interface EPCRequest extends PropertyIdentifier {}
+export type EPCRequest = PropertyIdentifier;
 
 export interface HMLRRequest extends PropertyIdentifier {
   titleNumber?: string;
 }
 
-export interface FloodRiskRequest extends PropertyIdentifier {}
+export type FloodRiskRequest = PropertyIdentifier;
 
 // Combined property data
 export interface PropertyData {
@@ -131,7 +131,7 @@ export interface PropertyData {
 }
 
 // API Status types
-export type ApiStatus = 'idle' | 'loading' | 'success' | 'error';
+export type ApiStatus = "idle" | "loading" | "success" | "error";
 
 export interface ApiState<T> {
   data: T | null;
@@ -167,16 +167,16 @@ export interface ApiConfig {
 // Validation schemas (for reference)
 export interface ValidationSchema {
   epc: {
-    required: ['postcode', 'address'];
-    optional: ['uprn'];
+    required: ["postcode", "address"];
+    optional: ["uprn"];
   };
   hmlr: {
-    required: ['postcode', 'address'];
-    optional: ['uprn', 'titleNumber'];
+    required: ["postcode", "address"];
+    optional: ["uprn", "titleNumber"];
   };
   flood: {
-    required: ['postcode', 'address'];
-    optional: ['uprn'];
+    required: ["postcode", "address"];
+    optional: ["uprn"];
   };
 }
 
@@ -189,11 +189,11 @@ export interface MockData {
 
 // API Health check
 export interface ApiHealth {
-  status: 'healthy' | 'degraded' | 'down';
+  status: "healthy" | "degraded" | "down";
   services: {
-    epc: 'up' | 'down';
-    hmlr: 'up' | 'down';
-    flood: 'up' | 'down';
+    epc: "up" | "down";
+    hmlr: "up" | "down";
+    flood: "up" | "down";
   };
   lastChecked: string;
   responseTime: number;

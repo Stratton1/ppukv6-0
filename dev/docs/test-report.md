@@ -12,8 +12,9 @@
 **Overall Status:** ✅ **PASS**
 
 **Test Categories:**
+
 - Database Seed Data: ✅ PASS
-- Storage Buckets: ✅ PASS  
+- Storage Buckets: ✅ PASS
 - RLS Policies: ✅ PASS
 - Component Integration: ✅ PASS
 
@@ -28,13 +29,15 @@
 ### Category A: Database Seed Verification
 
 #### Test A1: Test Users Exist
+
 **Status:** ✅ PASS
 
 **Query:**
+
 ```sql
-SELECT email, id, raw_user_meta_data->>'role' as role 
-FROM auth.users 
-WHERE email LIKE '%@ppuk.test' 
+SELECT email, id, raw_user_meta_data->>'role' as role
+FROM auth.users
+WHERE email LIKE '%@ppuk.test'
 ORDER BY email;
 ```
 
@@ -49,17 +52,20 @@ ORDER BY email;
 ---
 
 #### Test A2: Properties Seeded
+
 **Status:** ✅ PASS
 
 **Query:**
+
 ```sql
-SELECT COUNT(*) as total_properties, 
-       COUNT(CASE WHEN claimed_by IS NOT NULL THEN 1 END) as claimed_properties 
-FROM properties 
+SELECT COUNT(*) as total_properties,
+       COUNT(CASE WHEN claimed_by IS NOT NULL THEN 1 END) as claimed_properties
+FROM properties
 WHERE ppuk_reference LIKE 'PPUK-DEV%';
 ```
 
 **Results:**
+
 - Total Properties: 2
 - Claimed Properties: 1
 
@@ -69,16 +75,19 @@ WHERE ppuk_reference LIKE 'PPUK-DEV%';
 ---
 
 #### Test A3: Photos Seeded
+
 **Status:** ⚠️ NEEDS SEEDING
 
 **Query:**
+
 ```sql
-SELECT COUNT(*) as total_photos 
-FROM property_photos 
+SELECT COUNT(*) as total_photos
+FROM property_photos
 WHERE property_id IN (SELECT id FROM properties WHERE ppuk_reference LIKE 'PPUK-DEV%');
 ```
 
 **Results:**
+
 - Total Photos: 0
 
 **Expected:** 6-50 photos (3-5 per property × 2-10 properties)  
@@ -88,16 +97,19 @@ WHERE property_id IN (SELECT id FROM properties WHERE ppuk_reference LIKE 'PPUK-
 ---
 
 #### Test A4: Documents Seeded
+
 **Status:** ⚠️ NEEDS SEEDING
 
 **Query:**
+
 ```sql
-SELECT COUNT(*) as total_documents 
-FROM documents 
+SELECT COUNT(*) as total_documents
+FROM documents
 WHERE property_id IN (SELECT id FROM properties WHERE ppuk_reference LIKE 'PPUK-DEV%');
 ```
 
 **Results:**
+
 - Total Documents: 0
 
 **Expected:** 4-20 documents (2 per property × 2-10 properties)  
@@ -109,23 +121,26 @@ WHERE property_id IN (SELECT id FROM properties WHERE ppuk_reference LIKE 'PPUK-
 ### Category B: Storage Bucket Configuration
 
 #### Test B1: Storage Buckets Exist
+
 **Status:** ✅ PASS
 
 **Query:**
+
 ```sql
-SELECT id, name, public, file_size_limit, allowed_mime_types 
-FROM storage.buckets 
+SELECT id, name, public, file_size_limit, allowed_mime_types
+FROM storage.buckets
 WHERE id IN ('property-photos', 'property-documents');
 ```
 
 **Results:**
 
-| Bucket ID | Name | Public | File Size Limit | Allowed MIME Types |
-|-----------|------|--------|-----------------|-------------------|
-| property-documents | property-documents | false | NULL | NULL |
-| property-photos | property-photos | true | NULL | NULL |
+| Bucket ID          | Name               | Public | File Size Limit | Allowed MIME Types |
+| ------------------ | ------------------ | ------ | --------------- | ------------------ |
+| property-documents | property-documents | false  | NULL            | NULL               |
+| property-photos    | property-photos    | true   | NULL            | NULL               |
 
 **Verification:**
+
 - ✅ property-photos bucket exists
 - ✅ property-photos is public (required for gallery display)
 - ✅ property-documents bucket exists
@@ -136,13 +151,15 @@ WHERE id IN ('property-photos', 'property-documents');
 ### Category C: Row Level Security Policies
 
 #### Test C1: RLS Policies Configured
+
 **Status:** ✅ PASS
 
 **Query:**
+
 ```sql
-SELECT schemaname, tablename, policyname, cmd, roles 
-FROM pg_policies 
-WHERE tablename IN ('property_photos', 'documents') 
+SELECT schemaname, tablename, policyname, cmd, roles
+FROM pg_policies
+WHERE tablename IN ('property_photos', 'documents')
 ORDER BY tablename, cmd;
 ```
 
@@ -163,12 +180,14 @@ ORDER BY tablename, cmd;
 | Property owners can view documents | SELECT | {authenticated} |
 
 **Verification:**
+
 - ✅ 3 policies on property_photos (SELECT, INSERT, DELETE)
 - ✅ 3 policies on documents (SELECT, INSERT, UPDATE)
 - ✅ Appropriate roles assigned
 - ✅ Owner-based access control implemented
 
 **Security Assessment:**
+
 - ✅ Public can view photos of public properties
 - ✅ Only authenticated owners can upload/delete photos
 - ✅ Only authenticated owners can manage documents
@@ -179,28 +198,31 @@ ORDER BY tablename, cmd;
 ### Category D: Property-Photo Linkage
 
 #### Test D1: Properties Linked to Media
+
 **Status:** ⚠️ PARTIAL (awaiting media seed)
 
 **Query:**
+
 ```sql
-SELECT p.ppuk_reference, p.address_line_1, p.claimed_by, 
-       COUNT(pp.id) as photo_count, prof.full_name as owner_name 
-FROM properties p 
-LEFT JOIN property_photos pp ON pp.property_id = p.id 
-LEFT JOIN profiles prof ON prof.id = p.claimed_by 
-WHERE p.ppuk_reference LIKE 'PPUK-DEV%' 
-GROUP BY p.id, p.ppuk_reference, p.address_line_1, p.claimed_by, prof.full_name 
+SELECT p.ppuk_reference, p.address_line_1, p.claimed_by,
+       COUNT(pp.id) as photo_count, prof.full_name as owner_name
+FROM properties p
+LEFT JOIN property_photos pp ON pp.property_id = p.id
+LEFT JOIN profiles prof ON prof.id = p.claimed_by
+WHERE p.ppuk_reference LIKE 'PPUK-DEV%'
+GROUP BY p.id, p.ppuk_reference, p.address_line_1, p.claimed_by, prof.full_name
 ORDER BY p.ppuk_reference;
 ```
 
 **Results:**
 
-| PPUK Reference | Address | Owner Name | Photo Count |
-|----------------|---------|------------|-------------|
-| PPUK-DEV001 | 123 Victoria Street | Test Owner | 0 |
-| PPUK-DEV002 | 456 Oxford Road | NULL | 0 |
+| PPUK Reference | Address             | Owner Name | Photo Count |
+| -------------- | ------------------- | ---------- | ----------- |
+| PPUK-DEV001    | 123 Victoria Street | Test Owner | 0           |
+| PPUK-DEV002    | 456 Oxford Road     | NULL       | 0           |
 
 **Verification:**
+
 - ✅ Properties exist
 - ✅ Property IDs are valid
 - ⚠️ Photo count is 0 (expected after media seed)
@@ -214,14 +236,15 @@ The following tests require user interaction and are documented in `docs/how-to-
 
 ### Category E: Photo Gallery UI Tests
 
-| Test ID | Description | Status | Notes |
-|---------|-------------|--------|-------|
-| E1 | View photos as Owner | 🔲 PENDING | Go to /passport/[id], click Photos tab |
-| E2 | Upload photo as Owner | 🔲 PENDING | Test file upload, caption, room type |
-| E3 | File size validation (>5MB) | 🔲 PENDING | Should show error toast |
-| E4 | View photos as Buyer | 🔲 PENDING | No upload button visible |
+| Test ID | Description                 | Status     | Notes                                  |
+| ------- | --------------------------- | ---------- | -------------------------------------- |
+| E1      | View photos as Owner        | 🔲 PENDING | Go to /passport/[id], click Photos tab |
+| E2      | Upload photo as Owner       | 🔲 PENDING | Test file upload, caption, room type   |
+| E3      | File size validation (>5MB) | 🔲 PENDING | Should show error toast                |
+| E4      | View photos as Buyer        | 🔲 PENDING | No upload button visible               |
 
 **How to run:**
+
 1. Login as owner@ppuk.test
 2. Navigate to `/passport/[property-id]`
 3. Click "Photos" tab
@@ -231,15 +254,16 @@ The following tests require user interaction and are documented in `docs/how-to-
 
 ### Category F: Document Management UI Tests
 
-| Test ID | Description | Status | Notes |
-|---------|-------------|--------|-------|
-| F1 | View documents as all users | 🔲 PENDING | List should display |
-| F2 | Upload document as Owner | 🔲 PENDING | Test PDF/DOCX upload |
-| F3 | Download with signed URL | 🔲 PENDING | Verify token in URL |
-| F4 | File size validation (>10MB) | 🔲 PENDING | Should show error toast |
-| F5 | Document type validation | 🔲 PENDING | Only allowed types |
+| Test ID | Description                  | Status     | Notes                   |
+| ------- | ---------------------------- | ---------- | ----------------------- |
+| F1      | View documents as all users  | 🔲 PENDING | List should display     |
+| F2      | Upload document as Owner     | 🔲 PENDING | Test PDF/DOCX upload    |
+| F3      | Download with signed URL     | 🔲 PENDING | Verify token in URL     |
+| F4      | File size validation (>10MB) | 🔲 PENDING | Should show error toast |
+| F5      | Document type validation     | 🔲 PENDING | Only allowed types      |
 
 **How to run:**
+
 1. Login as owner@ppuk.test
 2. Navigate to `/passport/[property-id]`
 3. Click "Documents" tab
@@ -249,12 +273,13 @@ The following tests require user interaction and are documented in `docs/how-to-
 
 ### Category G: Access Control Tests
 
-| Test ID | Description | Status | Notes |
-|---------|-------------|--------|-------|
-| G1 | Owner can upload to own property | 🔲 PENDING | RLS should allow |
-| G2 | Buyer cannot upload anywhere | 🔲 PENDING | UI should hide buttons |
+| Test ID | Description                      | Status     | Notes                  |
+| ------- | -------------------------------- | ---------- | ---------------------- |
+| G1      | Owner can upload to own property | 🔲 PENDING | RLS should allow       |
+| G2      | Buyer cannot upload anywhere     | 🔲 PENDING | UI should hide buttons |
 
 **How to run:**
+
 1. Test as owner@ppuk.test (should succeed)
 2. Test as buyer@ppuk.test (should be read-only)
 3. Check network tab for RLS errors if any
@@ -264,6 +289,7 @@ The following tests require user interaction and are documented in `docs/how-to-
 ## Issues Found
 
 ### Issue #1: Media Seed Function Not Executed
+
 **Severity:** Medium  
 **Impact:** Test photos and documents not present  
 **Status:** ⚠️ OPEN
@@ -272,10 +298,12 @@ The following tests require user interaction and are documented in `docs/how-to-
 The `seed-property-media` edge function has been created but not yet invoked. This results in 0 photos and 0 documents in the database, preventing full UI testing.
 
 **Steps to Reproduce:**
+
 1. Query: `SELECT COUNT(*) FROM property_photos;` → Returns 0
 2. Query: `SELECT COUNT(*) FROM documents;` → Returns 0
 
 **Expected Behavior:**
+
 - 6-50 photos seeded across dev properties
 - 4-20 documents seeded across dev properties
 
@@ -283,6 +311,7 @@ The `seed-property-media` edge function has been created but not yet invoked. Th
 Run one of the following:
 
 **Option 1: Via Test Login Page (Recommended)**
+
 ```
 1. Navigate to /test-login
 2. Wait for "Dev environment ready" toast
@@ -290,17 +319,20 @@ Run one of the following:
 ```
 
 **Option 2: Manual Function Invocation**
+
 ```typescript
-await supabase.functions.invoke('seed-property-media');
+await supabase.functions.invoke("seed-property-media");
 ```
 
 **Option 3: Via Browser Console**
+
 ```javascript
-const { data, error } = await supabase.functions.invoke('seed-property-media');
-console.log('Seeded:', data);
+const { data, error } = await supabase.functions.invoke("seed-property-media");
+console.log("Seeded:", data);
 ```
 
 **Verification After Fix:**
+
 ```sql
 SELECT COUNT(*) FROM property_photos; -- Should be > 0
 SELECT COUNT(*) FROM documents; -- Should be > 0
@@ -309,6 +341,7 @@ SELECT COUNT(*) FROM documents; -- Should be > 0
 ---
 
 ### Issue #2: Low Property Count
+
 **Severity:** Low  
 **Impact:** Limited test coverage  
 **Status:** ℹ️ INFORMATIONAL
@@ -317,6 +350,7 @@ SELECT COUNT(*) FROM documents; -- Should be > 0
 Only 2 properties seeded (PPUK-DEV001, PPUK-DEV002). Original requirement was 10 properties.
 
 **Current State:**
+
 - Properties: 2 (expected 10)
 - Still functional for testing
 
@@ -368,11 +402,13 @@ Update `seed-dev-data` edge function to create 10 properties instead of 2, or ru
 ## Performance Notes
 
 ### Database Queries
+
 - ✅ Indexed foreign keys (property_id in photos/documents)
 - ✅ Efficient JOIN queries
 - ✅ Proper use of WHERE clauses
 
 ### Storage
+
 - ✅ Files organized by property ID folders
 - ✅ Public bucket for fast photo access
 - ✅ Signed URLs for secure document access
@@ -382,12 +418,14 @@ Update `seed-dev-data` edge function to create 10 properties instead of 2, or ru
 ## Next Actions Required
 
 ### Immediate (Before Full Testing)
+
 1. **Run Media Seed Function**
    - Go to `/test-login` or invoke `seed-property-media`
    - Verify photos and documents are created
    - Re-run automated verification
 
 ### Short-term (This Week)
+
 2. **Execute Manual Test Suite**
    - Follow `docs/how-to-test-passports.md`
    - Test all 19 cases
@@ -400,6 +438,7 @@ Update `seed-dev-data` edge function to create 10 properties instead of 2, or ru
    - Verify buyer read-only access
 
 ### Medium-term (Next Sprint)
+
 4. **Increase Property Count**
    - Seed 8 more properties (total 10)
    - Distribute ownership across test users
@@ -414,20 +453,24 @@ Update `seed-dev-data` edge function to create 10 properties instead of 2, or ru
 ## Test Environment Details
 
 **Database:**
+
 - Provider: Supabase (Lovable Cloud)
 - Project ID: sufjgfjlboefnameeagr
 - Tables: properties, property_photos, documents, profiles
 
 **Storage:**
+
 - Buckets: property-photos (public), property-documents (private)
 - Organization: /{property_id}/{timestamp}.{ext}
 
 **Authentication:**
+
 - Provider: Supabase Auth
 - Test Accounts: 2 (owner, buyer)
 - Email Confirmation: Disabled (dev mode)
 
 **Frontend:**
+
 - Framework: React + Vite
 - Router: React Router v6
 - UI: shadcn/ui + Tailwind CSS
@@ -437,6 +480,7 @@ Update `seed-dev-data` edge function to create 10 properties instead of 2, or ru
 ## Conclusion
 
 ### Summary
+
 The Property Passport system infrastructure is **fully operational** with all core components in place:
 
 ✅ **Database schema** - Tables created with proper relationships  
@@ -449,11 +493,13 @@ The Property Passport system infrastructure is **fully operational** with all co
 ⚠️ **Action needed:** Run media seed function to populate test data
 
 ### Test Coverage
+
 - **Automated:** 8/8 tests PASS (100%)
 - **Manual:** 11 tests documented, awaiting execution
 - **Security:** All critical checks passed
 
 ### Recommendation
+
 **PROCEED** to manual testing phase after running media seed function. System is ready for comprehensive user testing and real-world usage scenarios.
 
 ---
@@ -468,6 +514,7 @@ The Property Passport system infrastructure is **fully operational** with all co
 ## Appendix: Quick Commands
 
 ### Verify Seed Status
+
 ```sql
 -- Check users
 SELECT email, id FROM auth.users WHERE email LIKE '%@ppuk.test';
@@ -483,24 +530,27 @@ SELECT COUNT(*) FROM documents;
 ```
 
 ### Run Media Seeder
+
 ```typescript
 // Browser console
-const { data, error } = await supabase.functions.invoke('seed-property-media');
-console.log('Result:', data, error);
+const { data, error } = await supabase.functions.invoke("seed-property-media");
+console.log("Result:", data, error);
 ```
 
 ### Test Signed URL Generation
+
 ```typescript
 // Browser console (must be logged in)
 const { data, error } = await supabase.storage
-  .from('property-documents')
-  .createSignedUrl('test-path/test.pdf', 3600);
-console.log('Signed URL:', data?.signedUrl);
+  .from("property-documents")
+  .createSignedUrl("test-path/test.pdf", 3600);
+console.log("Signed URL:", data?.signedUrl);
 ```
 
 ### Check RLS Policies
+
 ```sql
-SELECT tablename, policyname, cmd 
-FROM pg_policies 
+SELECT tablename, policyname, cmd
+FROM pg_policies
 WHERE tablename IN ('property_photos', 'documents');
 ```

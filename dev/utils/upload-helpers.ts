@@ -1,5 +1,5 @@
-import { Page, expect } from '@playwright/test';
-import { TEST_FILES, TEST_UPLOADS, SELECTORS, EXPECTED_MESSAGES } from '../fixtures/test-data';
+import { Page, expect } from "@playwright/test";
+import { TEST_FILES, TEST_UPLOADS, SELECTORS, EXPECTED_MESSAGES } from "../fixtures/test-data";
 
 /**
  * File upload helper functions for E2E tests
@@ -13,14 +13,14 @@ export class UploadHelpers {
   async uploadPhoto(fileName: string, caption?: string, roomType?: string) {
     // Click upload photo button
     await this.page.click(SELECTORS.uploadPhotoButton);
-    
+
     // Wait for upload dialog
     await this.page.waitForSelector(SELECTORS.uploadDialog);
-    
+
     // Select file
     const fileInput = this.page.locator(SELECTORS.fileInput);
     await fileInput.setInputFiles(`e2e/fixtures/files/${fileName}`);
-    
+
     // Fill in metadata if provided
     if (caption) {
       await this.page.fill('input[name="caption"]', caption);
@@ -28,13 +28,15 @@ export class UploadHelpers {
     if (roomType) {
       await this.page.fill('input[name="roomType"]', roomType);
     }
-    
+
     // Submit upload
     await this.page.click(SELECTORS.uploadSubmit);
-    
+
     // Wait for success message
     await this.page.waitForSelector(SELECTORS.toastSuccess);
-    await expect(this.page.locator(SELECTORS.toastSuccess)).toContainText(EXPECTED_MESSAGES.uploadSuccess);
+    await expect(this.page.locator(SELECTORS.toastSuccess)).toContainText(
+      EXPECTED_MESSAGES.uploadSuccess
+    );
   }
 
   /**
@@ -43,28 +45,30 @@ export class UploadHelpers {
   async uploadDocument(fileName: string, documentType: string, description?: string) {
     // Click upload document button
     await this.page.click(SELECTORS.uploadDocumentButton);
-    
+
     // Wait for upload dialog
     await this.page.waitForSelector(SELECTORS.uploadDialog);
-    
+
     // Select file
     const fileInput = this.page.locator(SELECTORS.fileInput);
     await fileInput.setInputFiles(`e2e/fixtures/files/${fileName}`);
-    
+
     // Select document type
     await this.page.selectOption('select[name="documentType"]', documentType);
-    
+
     // Fill in description if provided
     if (description) {
       await this.page.fill('textarea[name="description"]', description);
     }
-    
+
     // Submit upload
     await this.page.click(SELECTORS.uploadSubmit);
-    
+
     // Wait for success message
     await this.page.waitForSelector(SELECTORS.toastSuccess);
-    await expect(this.page.locator(SELECTORS.toastSuccess)).toContainText(EXPECTED_MESSAGES.uploadSuccess);
+    await expect(this.page.locator(SELECTORS.toastSuccess)).toContainText(
+      EXPECTED_MESSAGES.uploadSuccess
+    );
   }
 
   /**
@@ -74,11 +78,11 @@ export class UploadHelpers {
     // Click upload button
     await this.page.click(SELECTORS.uploadPhotoButton);
     await this.page.waitForSelector(SELECTORS.uploadDialog);
-    
+
     // Try to upload large file
     const fileInput = this.page.locator(SELECTORS.fileInput);
     await fileInput.setInputFiles(`e2e/fixtures/files/${fileName}`);
-    
+
     // Check for error message
     await this.page.waitForSelector(SELECTORS.toastError);
     await expect(this.page.locator(SELECTORS.toastError)).toContainText(expectedError);
@@ -91,14 +95,16 @@ export class UploadHelpers {
     // Click upload button
     await this.page.click(SELECTORS.uploadPhotoButton);
     await this.page.waitForSelector(SELECTORS.uploadDialog);
-    
+
     // Try to upload invalid file type
     const fileInput = this.page.locator(SELECTORS.fileInput);
     await fileInput.setInputFiles(`e2e/fixtures/files/${fileName}`);
-    
+
     // Check for error message
     await this.page.waitForSelector(SELECTORS.toastError);
-    await expect(this.page.locator(SELECTORS.toastError)).toContainText(EXPECTED_MESSAGES.invalidFileType);
+    await expect(this.page.locator(SELECTORS.toastError)).toContainText(
+      EXPECTED_MESSAGES.invalidFileType
+    );
   }
 
   /**
@@ -106,14 +112,14 @@ export class UploadHelpers {
    */
   async downloadDocument() {
     // Click download button
-    const downloadPromise = this.page.waitForEvent('download');
+    const downloadPromise = this.page.waitForEvent("download");
     await this.page.click(SELECTORS.downloadButton);
-    
+
     const download = await downloadPromise;
-    
+
     // Verify download started
     expect(download.suggestedFilename()).toBeTruthy();
-    
+
     return download;
   }
 
@@ -134,8 +140,11 @@ export class UploadHelpers {
    */
   async waitForUploadComplete() {
     // Wait for loading state to disappear
-    await this.page.waitForSelector('[data-testid="upload-loading"]', { state: 'hidden', timeout: 30000 });
-    
+    await this.page.waitForSelector('[data-testid="upload-loading"]', {
+      state: "hidden",
+      timeout: 30000,
+    });
+
     // Wait for success toast
     await this.page.waitForSelector(SELECTORS.toastSuccess, { timeout: 10000 });
   }
@@ -143,8 +152,8 @@ export class UploadHelpers {
   /**
    * Get uploaded items count
    */
-  async getUploadedItemsCount(type: 'photos' | 'documents'): Promise<number> {
-    const selector = type === 'photos' ? SELECTORS.photoItem : SELECTORS.documentItem;
+  async getUploadedItemsCount(type: "photos" | "documents"): Promise<number> {
+    const selector = type === "photos" ? SELECTORS.photoItem : SELECTORS.documentItem;
     const items = await this.page.locator(selector).count();
     return items;
   }
