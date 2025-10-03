@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import Home from "./Home";
+import Home from "./public/Home";
 
 const Index = () => {
   return <Home />;
