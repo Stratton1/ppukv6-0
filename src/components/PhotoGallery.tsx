@@ -15,8 +15,7 @@ interface PhotoGalleryProps {
 
 interface Photo {
   id: string;
-  file_url: string;
-  file_name: string;
+  url: string;
   caption: string | null;
   room_type: string | null;
   created_at: string;
@@ -40,9 +39,10 @@ const PhotoGallery = ({ propertyId, canUpload = false }: PhotoGalleryProps) => {
   const fetchPhotos = async () => {
     try {
       const { data, error } = await supabase
-        .from("property_photos")
+        .from("media")
         .select("*")
         .eq("property_id", propertyId)
+        .eq("type", "photo")
         .order("created_at", { ascending: false });
 
       if (error) throw error;
@@ -105,11 +105,11 @@ const PhotoGallery = ({ propertyId, canUpload = false }: PhotoGalleryProps) => {
 
       // Save photo metadata
       const { error: dbError } = await supabase
-        .from('property_photos')
+        .from('media')
         .insert({
           property_id: propertyId,
-          file_url: publicUrl,
-          file_name: file.name,
+          type: 'photo',
+          url: publicUrl,
           caption: caption || null,
           room_type: roomType || null,
           uploaded_by: user.id,
@@ -176,7 +176,7 @@ const PhotoGallery = ({ propertyId, canUpload = false }: PhotoGalleryProps) => {
               onClick={() => setSelectedPhoto(photo)}
             >
               <img
-                src={photo.file_url}
+                src={photo.url}
                 alt={photo.caption || "Property photo"}
                 className="w-full h-full object-cover"
               />
@@ -242,7 +242,7 @@ const PhotoGallery = ({ propertyId, canUpload = false }: PhotoGalleryProps) => {
           {selectedPhoto && (
             <div className="space-y-4">
               <img
-                src={selectedPhoto.file_url}
+                src={selectedPhoto.url}
                 alt={selectedPhoto.caption || "Property photo"}
                 className="w-full h-auto rounded-lg"
               />

@@ -12,6 +12,7 @@ import Dashboard from "./pages/Dashboard";
 import ClaimProperty from "./pages/ClaimProperty";
 import Settings from "./pages/Settings";
 import TestLogin from "./pages/TestLogin";
+import DebugStorage from "./pages/DebugStorage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -29,6 +30,7 @@ const App = () => (
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/test-login" element={<TestLogin />} />
+          <Route path="/debug/storage" element={<DebugStorage />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/claim" element={<ClaimProperty />} />
           <Route path="/settings" element={<Settings />} />
