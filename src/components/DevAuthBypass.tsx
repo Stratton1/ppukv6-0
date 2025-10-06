@@ -1,7 +1,8 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Shield, User, Home } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
+import { supabaseReady, getSupabaseOrNull } from "@/lib/supabase/client";
+import { isDevelopment } from "@/lib/env";
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
 
@@ -13,9 +14,22 @@ export const DevAuthBypass = ({ enabled = true }: DevAuthBypassProps) => {
   const { toast } = useToast();
   const navigate = useNavigate();
 
-  if (!enabled) return null;
+  // Only show in development mode
+  if (!isDevelopment() || !enabled || !supabaseReady) return null;
+
+  const supabase = getSupabaseOrNull();
+  if (!supabase) return null;
 
   const bypassLogin = async (email: string, password: string, name: string) => {
+    if (!supabase) {
+      toast({
+        title: "Configuration Error",
+        description: "Supabase client not available",
+        variant: "destructive",
+      });
+      return;
+    }
+
     try {
       const { error } = await supabase.auth.signInWithPassword({
         email,
@@ -29,7 +43,7 @@ export const DevAuthBypass = ({ enabled = true }: DevAuthBypassProps) => {
         description: `Logged in as ${name}`,
       });
 
-      navigate("/dashboard");
+      // Auth provider will handle navigation
     } catch (error: any) {
       toast({
         title: "Bypass Failed",
