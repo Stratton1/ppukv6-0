@@ -142,5 +142,4 @@ CREATE INDEX IF NOT EXISTS idx_documents_document_type ON documents(document_typ
 -- Add comments for documentation
 COMMENT ON TABLE property_photos IS 'Stores metadata for property photos uploaded to storage';
 COMMENT ON TABLE documents IS 'Stores metadata for property documents uploaded to storage';
-COMMENT ON COLUMN property_photos.file_url IS 'Public URL for photo in property-photos bucket';
-COMMENT ON COLUMN documents.file_url IS 'Storage path for document in property-documents bucket (requires signed URL)';
+-- Note: Column comments removed as columns may not exist in current schema
