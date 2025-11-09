@@ -8,9 +8,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { DevAuthBypass } from "@/components/DevAuthBypass";
+import { DevAuthBypass } from "@/components/auth/DevAuthBypass";
 import { EnvErrorScreen } from "@/components/dev/EnvErrorScreen";
-import Navbar from "@/components/Navbar";
+import Navbar from "@/components/layout/Navbar";
 import { AlertCircle } from "lucide-react";
 
 const Login = () => {

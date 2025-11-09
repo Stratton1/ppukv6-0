@@ -55,6 +55,13 @@ dist-ssr
 .parcel-cache
 .turbo
 coverage
+.nyc_output
+
+# ----------------------------------------
+# Testing
+# ----------------------------------------
+coverage/
+*.lcov
 
 # ----------------------------------------
 # Supabase (ignore transient local files, keep project files)

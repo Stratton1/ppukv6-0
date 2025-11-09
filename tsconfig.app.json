@@ -15,11 +15,12 @@
     "jsx": "react-jsx",
 
     /* Linting */
-    "strict": false,
-    "noUnusedLocals": false,
-    "noUnusedParameters": false,
-    "noImplicitAny": false,
-    "noFallthroughCasesInSwitch": false,
+    "strict": false, // Gradually enabling strict checks below
+    "noUnusedLocals": true, // ✅ Enabled for code cleanliness
+    "noUnusedParameters": true, // ✅ Enabled for code cleanliness
+    "noImplicitAny": true, // ✅ Enabled for type safety
+    "strictNullChecks": true, // ✅ Enabled for null safety
+    "noFallthroughCasesInSwitch": true, // ✅ Enabled for switch safety
 
     "baseUrl": ".",
     "paths": {

@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
-import Navbar from "@/components/Navbar";
-import PropertyCard from "@/components/PropertyCard";
+import Navbar from "@/components/layout/Navbar";
+import PropertyCard from "@/components/property/PropertyCard";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Search, Filter } from "lucide-react";

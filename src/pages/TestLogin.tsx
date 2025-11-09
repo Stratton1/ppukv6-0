@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import Navbar from "@/components/Navbar";
+import Navbar from "@/components/layout/Navbar";
 import { User, Home, Loader2, CheckCircle } from "lucide-react";
 
 const TestLogin = () => {

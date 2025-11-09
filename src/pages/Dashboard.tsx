@@ -2,11 +2,11 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import Navbar from "@/components/Navbar";
+import Navbar from "@/components/layout/Navbar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Home, Plus, LogOut } from "lucide-react";
-import PropertyCard from "@/components/PropertyCard";
+import PropertyCard from "@/components/property/PropertyCard";
 
 const Dashboard = () => {
   const [user, setUser] = useState<any>(null);
