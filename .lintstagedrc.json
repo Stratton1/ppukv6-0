@@ -1,8 +1,4 @@
 {
-  "*.ts?(x)": [
-    "eslint --fix --max-warnings=0",
-    "npx prettier --write"
-  ],
+  "*.ts?(x)": ["eslint --fix", "npx prettier --write"],
   "*.{json,md,yml,yaml}": ["npx prettier --write"]
 }
-

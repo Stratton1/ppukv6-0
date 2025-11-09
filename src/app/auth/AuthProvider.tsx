@@ -1,6 +1,6 @@
 /**
  * Authentication context provider
- * 
+ *
  * Provides auth state, user info, and role management
  */
 
@@ -40,26 +40,25 @@ export function AuthProvider({ children, suspenseFallback }: AuthProviderProps) 
   const [roles, setRolesState] = useState<UserRole[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  // If environment not ready, show error screen
-  if (!supabaseReady) {
-    return <EnvErrorScreen />;
-  }
-
-  const supabase = getSupabaseOrNull();
-  if (!supabase) {
-    return <EnvErrorScreen />;
-  }
+  // Get supabase client (hooks must be called before any returns)
+  const supabase = supabaseReady ? getSupabaseOrNull() : null;
 
   useEffect(() => {
+    // If environment not ready or supabase not available, don't initialize
+    if (!supabaseReady || !supabase) {
+      setIsLoading(false);
+      return;
+    }
+
     // Get initial session
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       setUser(session?.user ?? null);
-      
+
       // Extract roles from user metadata
       const userRoles = session?.user?.user_metadata?.roles as UserRole[] | undefined;
       setRolesState(userRoles && userRoles.length > 0 ? userRoles : ["Owner"]);
-      
+
       setIsLoading(false);
     });
 
@@ -69,20 +68,25 @@ export function AuthProvider({ children, suspenseFallback }: AuthProviderProps) 
     } = supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session);
       setUser(session?.user ?? null);
-      
+
       // Extract roles from user metadata
       const userRoles = session?.user?.user_metadata?.roles as UserRole[] | undefined;
       setRolesState(userRoles && userRoles.length > 0 ? userRoles : ["Owner"]);
-      
+
       setIsLoading(false);
     });
 
     return () => subscription.unsubscribe();
-  }, []);
+  }, [supabase]);
 
   const setRoles = (newRoles: UserRole[]) => {
     setRolesState(newRoles);
   };
+
+  // If environment not ready, show error screen (after hooks)
+  if (!supabaseReady || !supabase) {
+    return <EnvErrorScreen />;
+  }
 
   if (isLoading && suspenseFallback) {
     return <>{suspenseFallback}</>;
@@ -108,17 +112,17 @@ export function useAuth() {
 
 /**
  * Hook to check if user has required role(s)
- * 
+ *
  * @param required Single role or array of roles (user needs at least one)
  */
 export function useHasRole(required: UserRole | UserRole[]): boolean {
   const { roles } = useAuth();
-  
+
   const requiredArray = Array.isArray(required) ? required : [required];
-  
+
   // Admin has access to everything
   if (roles.includes("Admin")) return true;
-  
+
   // Check if user has at least one required role
   return requiredArray.some((role) => roles.includes(role));
 }
